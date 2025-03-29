@@ -117,7 +117,7 @@ procedure inicializarTAS(var TAS: t_TAS);
     end;
 
 procedure cargarTAS(var TAS: t_TAS);
-    
+
     begin
         new(TAS[Vprograma,Tprogram]);
         TAS[Vprograma,Tprogram]^.elem[1]:=Tprogram;
@@ -292,13 +292,15 @@ procedure cargarTAS(var TAS: t_TAS);
 
         new(TAS[Vopp,Tmas]);
         TAS[Vopp,Tmas]^.elem[1]:=Tmas;
-        TAS[Vopp,Tmas]^.elem[2]:=Vop;
-        TAS[Vopp,Tmas]^.cant:=2;
+        TAS[Vopp,Tmas]^.elem[2]:=Vop2;
+        TAS[Vopp,Tmas]^.elem[3]:=Vopp;
+        TAS[Vopp,Tmas]^.cant:=3;
 
         new(TAS[Vopp,Tmenos]);
         TAS[Vopp,Tmenos]^.elem[1]:=Tmenos;
-        TAS[Vopp,Tmenos]^.elem[2]:=Vop;
-        TAS[Vopp,Tmenos]^.cant:=2;
+        TAS[Vopp,Tmenos]^.elem[2]:=Vop2;
+        TAS[Vopp,Tmenos]^.elem[3]:=Vopp;
+        TAS[Vopp,Tmenos]^.cant:=3;
 
         new(TAS[Vopp,Tparentesisc]);
         TAS[Vopp,Tparentesisc]^.cant:=0;
@@ -381,13 +383,15 @@ procedure cargarTAS(var TAS: t_TAS);
 
         new(TAS[Vop2p,Tmulti]);
         TAS[Vop2p,Tmulti]^.elem[1]:=Tmulti;
-        TAS[Vop2p,Tmulti]^.elem[2]:=Vop2;
-        TAS[Vop2p,Tmulti]^.cant:=2;
+        TAS[Vop2p,Tmulti]^.elem[2]:=Vop3;
+        TAS[Vop2p,Tmulti]^.elem[3]:=Vop2p;
+        TAS[Vop2p,Tmulti]^.cant:=3;
 
         new(TAS[Vop2p,Tdivi]);
         TAS[Vop2p,Tdivi]^.elem[1]:=Tdivi;
-        TAS[Vop2p,Tdivi]^.elem[2]:=Vop2;
-        TAS[Vop2p,Tdivi]^.cant:=2;
+        TAS[Vop2p,Tdivi]^.elem[2]:=Vop3;
+        TAS[Vop2p,Tdivi]^.elem[3]:=Vop2p;
+        TAS[Vop2p,Tdivi]^.cant:=3;
 
         new(TAS[Vop2p,Tparentesisc]);
         TAS[Vop2p,Tparentesisc]^.cant:=0;
@@ -476,8 +480,9 @@ procedure cargarTAS(var TAS: t_TAS);
 
         new(TAS[Vop3p,Texpo]);
         TAS[Vop3p,Texpo]^.elem[1]:=Texpo;
-        TAS[Vop3p,Texpo]^.elem[2]:=Vop3;
-        TAS[Vop3p,Texpo]^.cant:=2;
+        TAS[Vop3p,Texpo]^.elem[2]:=Vop4;
+        TAS[Vop3p,Texpo]^.elem[3]:=Vop3p;
+        TAS[Vop3p,Texpo]^.cant:=3;
 
         new(TAS[Vop3p,Tparentesisc]);
         TAS[Vop3p,Tparentesisc]^.cant:=0;
@@ -923,9 +928,8 @@ procedure analizador_predictivo(var ruta_fuente:string; var arbol:puntero_arbol;
         while (estado = proceso) do 
             begin
                 desapilar(pila,elem);
-                writeln('elem.simbolo: ',elem.simbolo);
-                writeln('complex: ',complex);
-
+                // writeln('elem.simbolo: ',elem.simbolo);
+                // writeln('complex: ',complex);
 
                 if elem.simbolo in [Tprogram..Tmenori] then
                     begin

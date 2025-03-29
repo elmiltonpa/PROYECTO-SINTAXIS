@@ -86,6 +86,9 @@ procedure completarTS(var ts: tabla_simbolos);
         Inc(ts.cant);
         ts.elem[ts.cant].lexema := 'filas';
         ts.elem[ts.cant].complex := Tfilas;
+        Inc(ts.cant);
+        ts.elem[ts.cant].lexema := 'trans';
+        ts.elem[ts.cant].complex := Ttrans;
     end;
 
 procedure agregar_TS(var ts: tabla_simbolos; lexema:string;var complex:TipoSG);
