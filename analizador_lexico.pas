@@ -5,7 +5,7 @@ UNIT analizador_Lexico;
 INTERFACE
 
 USES
-    SysUtils;
+    crt,SysUtils;
 
 CONST
 
@@ -16,8 +16,8 @@ TYPE
 
     TipoSG = (Tprogram, Tid , Tpuntoyc , Tllavea , Tllavec , Tdef , Tdosp , Tmatriz , Tcorchetea , Tcorchetec , Treal , Tasig , 
               Tmas , Tmenos , Tmulti , Tdivi , Texpo , Tcreal , Tfilas , Ttrans ,Tparentesisa , Tparentesisc , Tcolumnas , Tcoma , Tleer , 
-              Tcadena , Tescribir , Tif , Telse, Twhile , Tnot , Tand , Tor , Tigual , Tdiferente, Tmayor , Tmenor , Tmayori , Tmenori,
-              Tpregunta,pesos,ErrorLexico ,Vprograma , Vdefiniciones, Vlistadefiniciones, Vmasdefiniciones , Vdefinicion , Vtipo , Vcuerpo ,
+              Tcadena , Tescribir , Tif , Telse, Twhile , Tnot , Tand , Tor , Tigual , Tdiferente, Tmayor , Tmenor , Tmayori ,Tpregunta , Tmenori,
+              pesos,ErrorLexico ,Vprograma , Vdefiniciones, Vlistadefiniciones, Vmasdefiniciones , Vdefinicion , Vtipo , Vcuerpo ,
               Vsentencias, Vasignacion, Vasignacionp, Vop , Vopp , Vop2 , Vop2p , Vop3 , Vop3p , Vop4 , Vcmatriz , Vfilas ,
               Vfilasextra , Vfila , Vnumeros , Vnumerosp , Vleer , Vescribir , Vlista , Vlistap , Velemento , Vcondicional , Vsino , 
               Vciclo , Vcondicion , Vexpresionl , Vexpresionlp , Vexpresionr , Vcomparacion );
@@ -173,14 +173,14 @@ function es_id(var fuente:t_archivo;var control:longint;var lexema:string):boole
                 leer_car(fuente,control_local,car);
                 estado_actual := delta[estado_actual,car_a_simbolo(car)];
                 Inc(control_local);
-                if estado_actual = 1 then
+                if (estado_actual <> 3) and (estado_actual <> 2 ) then
                     lexema := lexema + car;
             end;
-        // writeln('Lexema, ',lexema);
+
         if estado_actual in F then
             begin
                 es_id := true;
-                control := (control_local-1);
+                control := (control_local - 1);
             end
         else
             es_id := false;
@@ -232,6 +232,7 @@ function es_constante_real(var fuente:t_archivo;var control:longint;var lexema:s
     
 
         estado_actual := q0;
+      
 
         while (estado_actual <> 4) and (estado_actual <> 5) do
             begin
@@ -250,8 +251,6 @@ function es_constante_real(var fuente:t_archivo;var control:longint;var lexema:s
             end
         else
             es_constante_real := false;
-
-
 
     end;
 
@@ -312,6 +311,7 @@ function es_cadena(var fuente:t_archivo;var control:longint;var lexema:string):b
             end
         else
             es_cadena := false;
+
     end;
 
 function es_simbolo_especial(var fuente:t_archivo;var control:longint;var lexema:string;var complex:TipoSG):boolean;
@@ -458,7 +458,7 @@ procedure obtener_siguiente_complex(var fuente:t_archivo;var control:longint; va
                 else
                     if es_constante_real(fuente,control,lexema) then
                         begin
-                        complex := Tcreal
+                            complex := Tcreal
                         end
                     else
                         if es_cadena(fuente,control,lexema) then
@@ -466,7 +466,7 @@ procedure obtener_siguiente_complex(var fuente:t_archivo;var control:longint; va
                         else
                             if not es_simbolo_especial(fuente,control,lexema,complex) then
                                begin
-                               complex := ErrorLexico;
+                                    complex := ErrorLexico;
                                 end;
             end;
 

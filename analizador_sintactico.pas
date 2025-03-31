@@ -778,6 +778,11 @@ procedure cargarTAS(var TAS: t_TAS);
         TAS[Vexpresionl,Tnot]^.elem[4]:=Tparentesisc;
         TAS[Vexpresionl,Tnot]^.cant:=4;
 
+        new(TAS[Vexpresionl,Tpregunta]);
+        TAS[Vexpresionl,Tpregunta]^.elem[1]:=VexpresionR;
+        TAS[Vexpresionl,Tpregunta]^.elem[2]:=Vexpresionlp;
+        TAS[Vexpresionl,Tpregunta]^.cant:=2;
+
         new(TAS[Vexpresionlp,Tparentesisc]);
         TAS[Vexpresionlp,Tparentesisc]^.cant:=0;
 
@@ -802,7 +807,7 @@ procedure cargarTAS(var TAS: t_TAS);
         new(TAS[Vexpresionr,Tpregunta]);
         TAS[Vexpresionr,Tpregunta]^.elem[1]:=Tpregunta;
         TAS[Vexpresionr,Tpregunta]^.elem[2]:=Vop;
-        TAS[Vexpresionr,Tpregunta]^.elem[3]:=Vcondicion;
+        TAS[Vexpresionr,Tpregunta]^.elem[3]:=Vcomparacion;
         TAS[Vexpresionr,Tpregunta]^.elem[4]:=Vop;
         TAS[Vexpresionr,Tpregunta]^.elem[5]:=Tpregunta;
         TAS[Vexpresionr,Tpregunta]^.cant:=5;
@@ -831,7 +836,6 @@ procedure cargarTAS(var TAS: t_TAS);
         TAS[Vcomparacion,Tmenori]^.elem[1]:=Tmenori;
         TAS[Vcomparacion,Tmenori]^.cant:=1;
 
-
         new(TAS[Vopp,pesos]);
         TAS[Vopp,pesos]^.cant:=0;
 
@@ -844,6 +848,15 @@ procedure cargarTAS(var TAS: t_TAS);
         new(TAS[Vcuerpo,pesos]);
         TAS[Vcuerpo,pesos]^.cant:=0;
 
+        // new(TAS[Vop,Tpregunta]);
+        // TAS[Vop,Tpregunta]^.cant:=0;
+
+        // new(TAS[Vcondicion,Tpregunta]);
+        // TAS[Vcondicion,Tpregunta]^.cant:=0;  Vcondicion  Vsino
+
+        // new(TAS[Vexpresionlp,Tpregunta]);
+        // TAS[Vexpresionlp,Tpregunta]^.cant:=0;
+
 
         new(TAS[Vdefinicion,pesos]);
         TAS[Vdefinicion,pesos]^.cant:=0;
@@ -854,7 +867,11 @@ procedure cargarTAS(var TAS: t_TAS);
         new(TAS[Vnumerosp,pesos]);
         TAS[Vnumerosp,pesos]^.cant:=0;
 
+        new(TAS[Vsino,pesos]);
+        TAS[Vsino,pesos]^.cant:=0;
 
+        new(TAS[Vexpresionlp,pesos]);
+        TAS[Vexpresionlp,pesos]^.cant:=0;
 
     end;
 
@@ -930,6 +947,7 @@ procedure analizador_predictivo(var ruta_fuente:string; var arbol:puntero_arbol;
                 desapilar(pila,elem);
                 // writeln('elem.simbolo: ',elem.simbolo);
                 // writeln('complex: ',complex);
+                // readkey;
 
                 if elem.simbolo in [Tprogram..Tmenori] then
                     begin

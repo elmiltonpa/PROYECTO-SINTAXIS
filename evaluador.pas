@@ -59,6 +59,15 @@ procedure evaluar_escribir(var arbol: puntero_arbol; var estado: t_estado);
 procedure evaluar_lista(var arbol: puntero_arbol; var estado: t_estado);
 procedure evaluar_lista_prima(var arbol: puntero_arbol; var estado: t_estado);
 procedure evaluar_elemento(var arbol: puntero_arbol; var estado: t_estado);
+procedure evaluar_condicional(var arbol:puntero_arbol; var estado:t_estado);
+procedure evaluar_si_no(var arbol:puntero_arbol; var estado:t_estado);
+procedure evaluar_ciclo(var arbol:puntero_arbol; var estado:t_estado);
+procedure evaluar_condicion(var arbol:puntero_arbol; var estado:t_estado; var resultado_condicion:boolean);
+procedure evaluar_expresion_l(var arbol:puntero_arbol; var estado:t_estado; var resultado_condicion:boolean);
+procedure evaluar_expresion_l_prima(var arbol:puntero_arbol; var estado:t_estado; var resultado_condicion:boolean);
+procedure evaluar_expresion_r(var arbol:puntero_arbol; var estado:t_estado; var resultado_condicion:boolean);
+procedure evaluar_comparacion(var arbol:puntero_arbol;var estado:t_estado;var valor_izq,valor_der:real;var matriz_izq,matriz_der:t_tipo_matriz;
+                              var tipo_izq,tipo_der:t_tipo;var resultado_condicion:boolean);
 
 IMPLEMENTATION  
 
@@ -433,6 +442,21 @@ function pasar_a_matriz(lexema: string; var matriz: t_tipo_matriz;var filas, col
         pasar_a_matriz := matriz_valida;
     end;
 
+function matrices_iguales(var A, B: t_tipo_matriz):boolean;
+    var
+        i, j: integer;
+        filas, columnas: integer;
+        iguales: boolean;
+    begin
+        obtener_dimensiones_cmatriz(A, filas, columnas);
+        iguales := true;
+        for i := 1 to filas do
+            for j := 1 to columnas do
+                if A[i, j] <> B[i, j] then
+                    iguales := false;
+        matrices_iguales := iguales;
+    end;
+
 
 // <Programa> ::= "program" "id" ";" <Definiciones> "{" <Cuerpo> "}"
 procedure evaluar_programa(var arbol: puntero_arbol; var estado: t_estado);
@@ -511,8 +535,8 @@ procedure evaluar_sentencias(var arbol: puntero_arbol; var estado: t_estado);
             Vasignacion : evaluar_asignacion(arbol^.hijos.elem[1], estado);
             Vleer : evaluar_leer(arbol^.hijos.elem[1], estado);
             Vescribir : evaluar_escribir(arbol^.hijos.elem[1], estado);
-            // Vcondicional : evaluar_condicional(arbol^.hijos.elem[1], estado);
-            // Vciclo : evaluar_ciclo(arbol^.hijos.elem[1], estado);
+            Vcondicional : evaluar_condicional(arbol^.hijos.elem[1], estado);
+            Vciclo : evaluar_ciclo(arbol^.hijos.elem[1], estado);
         end;
     end;
 
@@ -873,8 +897,7 @@ procedure evaluar_op_4(var arbol: puntero_arbol; var estado: t_estado; var valor
                             obtener_matriz(estado, arbol^.hijos.elem[3]^.lexema, matriz);
                             obtener_dimensiones(estado, arbol^.hijos.elem[3]^.lexema, fila,columna);
                             transponer_matriz(matriz, matriz_transpuesta, fila,columna);
-                            // obtener_dimensiones_cmatriz(matriz_transpuesta,fila,columna);
-                            writeln('FILA Y COLUMN, ',fila ,' ', columna);
+                        
                             matriz := matriz_transpuesta;
                         end;
                 end;
@@ -975,13 +998,16 @@ procedure evaluar_leer(var arbol: puntero_arbol; var estado: t_estado);
         valor_leido:string;
         valor:real;
         matriz:t_tipo_matriz;
-        lexema: string;
+        lexema,cadena: string;
         tipo: t_tipo;
         filas, columnas: integer;
 
     begin
         lexema := arbol^.hijos.elem[5]^.lexema;
+        cadena := Copy(arbol^.hijos.elem[3]^.lexema,2,Length(arbol^.hijos.elem[3]^.lexema)-2);
         obtener_tipo(estado, lexema, tipo);
+        if Trim(cadena) <> '' then
+            writeln(arbol^.hijos.elem[3]^.lexema, ': ');
         readln(valor_leido);
 
         case tipo of
@@ -1007,6 +1033,7 @@ procedure evaluar_leer(var arbol: puntero_arbol; var estado: t_estado);
 procedure evaluar_escribir(var arbol: puntero_arbol; var estado: t_estado);
     begin
         evaluar_lista(arbol^.hijos.elem[3], estado);
+        writeln();
     end;
 
 // <Lista> ::= <Elemento> <Lista'>
@@ -1036,15 +1063,17 @@ procedure evaluar_elemento(var arbol: puntero_arbol; var estado: t_estado);
     begin
         case arbol^.hijos.elem[1]^.simbolo of
             Tcadena: begin
-                        writeln(arbol^.hijos.elem[1]^.lexema);
+                        lexema:=Copy(arbol^.hijos.elem[1]^.lexema,2,Length(arbol^.hijos.elem[1]^.lexema)-2);
+                        write(lexema);
                     end;
             Vop: begin
                     evaluar_op(arbol^.hijos.elem[1], estado,valor,matriz,tipo,lexema);
                     case tipo of
-                        Treal_estado: writeln('valor: ',valor:0:2);
+                        Treal_estado: write(valor:0:2);
                         Tmatriz_estado: 
                             begin
                                 obtener_dimensiones(estado,lexema, fila,columna);
+                                writeln();
                                 for i:=1 to fila do
                                     begin
                                         for j:=1 to columna do
@@ -1059,5 +1088,178 @@ procedure evaluar_elemento(var arbol: puntero_arbol; var estado: t_estado);
                 end;
         end;
     end;
+
+// <Condicional> ::= “if” <Condicion> “{“ <Cuerpo> “}” <SiNo> 
+procedure evaluar_condicional(var arbol:puntero_arbol; var estado:t_estado);
+    var
+        resultado_condicion:boolean;
+    begin
+        evaluar_condicion(arbol^.hijos.elem[2], estado,resultado_condicion);
+        if resultado_condicion then
+            evaluar_cuerpo(arbol^.hijos.elem[4], estado)
+        else
+            evaluar_si_no(arbol^.hijos.elem[6], estado);
+    end;
+
+
+// <SiNo> ::= “else” “{“ <Cuerpo> “}” | eps
+procedure evaluar_si_no(var arbol:puntero_arbol; var estado:t_estado);
+    begin
+        if arbol^.hijos.cant > 0 then
+            begin
+                evaluar_cuerpo(arbol^.hijos.elem[3], estado);
+            end;
+    end;
+
+// <Ciclo> ::= “while” <Condicion> “{“ <Cuerpo> “}” 
+procedure evaluar_ciclo(var arbol:puntero_arbol; var estado:t_estado);
+    var
+        resultado_condicion:boolean;
+    begin
+        evaluar_condicion(arbol^.hijos.elem[2], estado,resultado_condicion);
+        while resultado_condicion do
+            begin
+                evaluar_cuerpo(arbol^.hijos.elem[4], estado);
+                evaluar_condicion(arbol^.hijos.elem[2], estado,resultado_condicion);
+            end;
+
+    end;
+
+// <Condicion> ::= “(“  <ExpresionL>  “)” 
+procedure evaluar_condicion(var arbol:puntero_arbol; var estado:t_estado; var resultado_condicion:boolean);
+    begin
+        evaluar_expresion_l(arbol^.hijos.elem[2], estado,resultado_condicion);
+    end;
+
+// <ExpresionL> ::= <ExpresionR> <ExpresionL'>
+//                | “!” “(“ <ExpresionL> “)”
+
+procedure evaluar_expresion_l(var arbol:puntero_arbol; var estado:t_estado; var resultado_condicion:boolean);
+
+    begin
+       case arbol^.hijos.elem[1]^.simbolo of
+            VexpresionR: begin
+                            evaluar_expresion_r(arbol^.hijos.elem[1], estado, resultado_condicion);
+                            evaluar_expresion_l_prima(arbol^.hijos.elem[2], estado, resultado_condicion);
+                        end;
+            Tnot: begin
+                            evaluar_expresion_l(arbol^.hijos.elem[3], estado, resultado_condicion);
+                            resultado_condicion := not resultado_condicion;
+                        end;
+        end;
+    end;
+
+// <ExpresionL'> ::= “&&” <ExpresionR> <ExpresionL'> 
+//                 | “||” <ExpresionR> <ExpresionL'> 
+//                 | eps
+
+procedure evaluar_expresion_l_prima(var arbol:puntero_arbol; var estado:t_estado; var resultado_condicion:boolean);
+    var
+        resultado_condicion_der:boolean;
+    begin
+        if arbol^.hijos.cant > 0 then
+            begin
+                case arbol^.hijos.elem[1]^.simbolo of
+                    Tand: begin
+                            evaluar_expresion_r(arbol^.hijos.elem[2], estado, resultado_condicion_der);
+                            resultado_condicion := (resultado_condicion and resultado_condicion_der);
+                        end;
+                    Tor: begin
+                            evaluar_expresion_r(arbol^.hijos.elem[2], estado, resultado_condicion_der);
+                            resultado_condicion := (resultado_condicion or resultado_condicion_der);
+                        end;
+                end;
+            
+            if arbol^.hijos.cant > 2 then
+                begin
+                    evaluar_expresion_l_prima(arbol^.hijos.elem[3], estado, resultado_condicion);
+                end;
+            end;
+    end;
+
+// <ExpresionR> ::= “?” <OP> <Comparacion> <OP> “?” | “(“ <ExpresionL> “)”
+procedure evaluar_expresion_r(var arbol:puntero_arbol; var estado:t_estado; var resultado_condicion:boolean);
+    var
+        valor_izq,valor_der:real;
+        matriz_izq,matriz_der:t_tipo_matriz;
+        tipo_izq,tipo_der:t_tipo;
+        lexema_izq,lexema_der:string;
+    begin
+        case arbol^.hijos.elem[1]^.simbolo of
+            Tpregunta: begin
+                    evaluar_op(arbol^.hijos.elem[2], estado,valor_izq,matriz_izq,tipo_izq,lexema_izq);
+                    evaluar_op(arbol^.hijos.elem[4], estado,valor_der,matriz_der,tipo_der,lexema_der);
+                    evaluar_comparacion(arbol^.hijos.elem[3], estado,valor_izq,valor_der,matriz_izq,matriz_der,tipo_izq,tipo_der,resultado_condicion);
+                end;
+            Tparentesisa: begin
+                            evaluar_expresion_l(arbol^.hijos.elem[2], estado, resultado_condicion);
+                        end;
+        end;
+    end;
+
+// <Comparacion> ::= “==” | “!=” | “>” | “<” | “ >=” | “<=”  
+// COMPARACIONES VALIDAS CON:
+// IGUAL REAL == REAL, MATRIZ == MATRIZ
+// DISTINTO REAL != REAL, MATRIZ != MATRIZ
+// MAYOR REAL > REAL
+// MENOR REAL < REAL
+// MAYOR IGUAL REAL >= REAL
+// MENOR IGUAL REAL <= REAL
+
+
+procedure evaluar_comparacion(var arbol:puntero_arbol;var estado:t_estado;var valor_izq,valor_der:real;var matriz_izq,matriz_der:t_tipo_matriz;
+                              var tipo_izq,tipo_der:t_tipo;var resultado_condicion:boolean);
+
+    begin
+        if tipo_izq <> tipo_der then
+            begin
+                writeln('Error: No se puede comparar valor de distinto tipo');
+
+            end
+        else
+            begin
+                case arbol^.hijos.elem[1]^.simbolo of
+                    Tigual: begin
+                                if tipo_izq = Treal_estado then
+                                    resultado_condicion := (valor_izq = valor_der)
+                                else
+                                    resultado_condicion := (matrices_iguales(matriz_izq, matriz_der));
+                            end;
+                    Tdiferente: begin
+                                    if tipo_izq = Treal_estado then
+                                        resultado_condicion := (valor_izq <> valor_der)
+                                    else
+                                        resultado_condicion := not matrices_iguales(matriz_izq, matriz_der);
+                                end;
+                    Tmayor: begin
+                                if tipo_izq = Treal_estado then
+                                    resultado_condicion := (valor_izq > valor_der)
+                                else
+                                    writeln('Error: No se puede comparar una matriz con otra con >');
+                            end;
+                    Tmenor: begin
+                                if tipo_izq = Treal_estado then
+                                    resultado_condicion := (valor_izq < valor_der)
+                                else
+                                    writeln('Error: No se puede comparar una matriz con otra con <');
+                            end;
+                    Tmayori: begin 
+                                    if tipo_izq = Treal_estado then
+                                        resultado_condicion := (valor_izq >= valor_der)
+                                    else
+                                        writeln('Error: No se puede comparar una matriz con otra con >=');
+                                end; 
+                    Tmenori: begin 
+                                    if tipo_izq = Treal_estado then
+                                        resultado_condicion := (valor_izq <= valor_der)
+                                    else
+                                        writeln('Error: No se puede comparar una matriz con otra con <=');
+                                end; 
+                    end;
+
+            end;
+    end;
+
+
 
 END.
