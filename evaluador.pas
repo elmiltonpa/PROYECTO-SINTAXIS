@@ -904,7 +904,7 @@ procedure evaluar_op_4(var arbol: puntero_arbol; var estado: t_estado; var valor
                         else
                             writeln('Error: No se puede negar una matriz');
                     end;
-            Ttrans: 
+            Ttras: 
                 begin
                     obtener_tipo(estado, arbol^.hijos.elem[3]^.lexema, tipo);
                     if tipo = Treal_estado then

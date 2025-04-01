@@ -15,7 +15,7 @@ CONST
 TYPE
 
     TipoSG = (Tprogram, Tid , Tpuntoyc , Tllavea , Tllavec , Tdef , Tdosp , Tmatriz , Tcorchetea , Tcorchetec , Treal , Tasig , 
-              Tmas , Tmenos , Tmulti , Tdivi , Texpo , Tcreal , Tfilas , Ttrans ,Tparentesisa , Tparentesisc , Tcolumnas , Tcoma , Tleer , 
+              Tmas , Tmenos , Tmulti , Tdivi , Texpo , Tcreal , Tfilas , Ttras ,Tparentesisa , Tparentesisc , Tcolumnas , Tcoma , Tleer , 
               Tcadena , Tescribir , Tif , Telse, Twhile , Tnot , Tand , Tor , Tigual , Tdiferente, Tmayor , Tmenor , Tmayori ,Tpregunta , Tmenori,
               pesos,ErrorLexico ,Vprograma , Vdefiniciones, Vlistadefiniciones, Vmasdefiniciones , Vdefinicion , Vtipo , Vcuerpo ,
               Vsentencias, Vasignacion, Vasignacionp, Vop , Vopp , Vop2 , Vop2p , Vop3 , Vop3p , Vop4 , Vop4p , Vcmatriz , Vfilas ,
@@ -87,8 +87,8 @@ procedure completarTS(var ts: tabla_simbolos);
         ts.elem[ts.cant].lexema := 'filas';
         ts.elem[ts.cant].complex := Tfilas;
         Inc(ts.cant);
-        ts.elem[ts.cant].lexema := 'trans';
-        ts.elem[ts.cant].complex := Ttrans;
+        ts.elem[ts.cant].lexema := 'tras';
+        ts.elem[ts.cant].complex := Ttras;
     end;
 
 procedure agregar_TS(var ts: tabla_simbolos; lexema:string;var complex:TipoSG);

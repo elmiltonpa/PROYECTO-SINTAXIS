@@ -274,10 +274,10 @@ procedure cargarTAS(var TAS: t_TAS);
         TAS[Vop,Tparentesisa]^.elem[2]:=Vopp;
         TAS[Vop,Tparentesisa]^.cant:=2;
 
-        new(TAS[Vop,Ttrans]);
-        TAS[Vop,Ttrans]^.elem[1]:=Vop2;
-        TAS[Vop,Ttrans]^.elem[2]:=Vopp;
-        TAS[Vop,Ttrans]^.cant:=2;
+        new(TAS[Vop,Ttras]);
+        TAS[Vop,Ttras]^.elem[1]:=Vop2;
+        TAS[Vop,Ttras]^.elem[2]:=Vopp;
+        TAS[Vop,Ttras]^.cant:=2;
 
         new(TAS[Vop,Tcolumnas]);
         TAS[Vop,Tcolumnas]^.elem[1]:=Vop2;
@@ -359,10 +359,10 @@ procedure cargarTAS(var TAS: t_TAS);
         TAS[Vop2,Tparentesisa]^.elem[2]:=Vop2p;
         TAS[Vop2,Tparentesisa]^.cant:=2;
 
-        new(TAS[Vop2,Ttrans]);
-        TAS[Vop2,Ttrans]^.elem[1]:=Vop3;
-        TAS[Vop2,Ttrans]^.elem[2]:=Vop2p;
-        TAS[Vop2,Ttrans]^.cant:=2;
+        new(TAS[Vop2,Ttras]);
+        TAS[Vop2,Ttras]^.elem[1]:=Vop3;
+        TAS[Vop2,Ttras]^.elem[2]:=Vop2p;
+        TAS[Vop2,Ttras]^.cant:=2;
 
         new(TAS[Vop2,Tcolumnas]);
         TAS[Vop2,Tcolumnas]^.elem[1]:=Vop3;
@@ -450,10 +450,10 @@ procedure cargarTAS(var TAS: t_TAS);
         TAS[Vop3,Tparentesisa]^.elem[2]:=Vop3p;
         TAS[Vop3,Tparentesisa]^.cant:=2;
 
-        new(TAS[Vop3,Ttrans]);
-        TAS[Vop3,Ttrans]^.elem[1]:=Vop4;
-        TAS[Vop3,Ttrans]^.elem[2]:=Vop3p;
-        TAS[Vop3,Ttrans]^.cant:=2;
+        new(TAS[Vop3,Ttras]);
+        TAS[Vop3,Ttras]^.elem[1]:=Vop4;
+        TAS[Vop3,Ttras]^.elem[2]:=Vop3p;
+        TAS[Vop3,Ttras]^.cant:=2;
 
         new(TAS[Vop3,Tcolumnas]);
         TAS[Vop3,Tcolumnas]^.elem[1]:=Vop4;
@@ -542,12 +542,12 @@ procedure cargarTAS(var TAS: t_TAS);
         TAS[Vop4,Tparentesisa]^.elem[3]:=Tparentesisc;
         TAS[Vop4,Tparentesisa]^.cant:=3;
 
-        new(TAS[Vop4,Ttrans]);
-        TAS[Vop4,Ttrans]^.elem[1]:=Ttrans;
-        TAS[Vop4,Ttrans]^.elem[2]:=Tparentesisa;
-        TAS[Vop4,Ttrans]^.elem[3]:=Tid;
-        TAS[Vop4,Ttrans]^.elem[4]:=Tparentesisc;
-        TAS[Vop4,Ttrans]^.cant:=4;
+        new(TAS[Vop4,Ttras]);
+        TAS[Vop4,Ttras]^.elem[1]:=Ttras;
+        TAS[Vop4,Ttras]^.elem[2]:=Tparentesisa;
+        TAS[Vop4,Ttras]^.elem[3]:=Tid;
+        TAS[Vop4,Ttras]^.elem[4]:=Tparentesisc;
+        TAS[Vop4,Ttras]^.cant:=4;
 
         new(TAS[Vop4,Tcolumnas]);
         TAS[Vop4,Tcolumnas]^.elem[1]:=Tcolumnas;
@@ -611,10 +611,10 @@ procedure cargarTAS(var TAS: t_TAS);
         TAS[Vnumeros,Tparentesisa]^.elem[2]:=Vnumerosp;
         TAS[Vnumeros,Tparentesisa]^.cant:=2;
 
-        new(TAS[Vnumeros,Ttrans]);
-        TAS[Vnumeros,Ttrans]^.elem[1]:=Vop4;
-        TAS[Vnumeros,Ttrans]^.elem[2]:=Vnumerosp;
-        TAS[Vnumeros,Ttrans]^.cant:=2;
+        new(TAS[Vnumeros,Ttras]);
+        TAS[Vnumeros,Ttras]^.elem[1]:=Vop4;
+        TAS[Vnumeros,Ttras]^.elem[2]:=Vnumerosp;
+        TAS[Vnumeros,Ttras]^.cant:=2;
 
         new(TAS[Vnumeros,Tcolumnas]);
         TAS[Vnumeros,Tcolumnas]^.elem[1]:=Vop4;
@@ -675,10 +675,10 @@ procedure cargarTAS(var TAS: t_TAS);
         TAS[Vlista,Tparentesisa]^.elem[2]:=Vlistap;
         TAS[Vlista,Tparentesisa]^.cant:=2;
 
-        new(TAS[Vlista,Ttrans]);
-        TAS[Vlista,Ttrans]^.elem[1]:=Velemento;
-        TAS[Vlista,Ttrans]^.elem[2]:=Vlistap;
-        TAS[Vlista,Ttrans]^.cant:=2;
+        new(TAS[Vlista,Ttras]);
+        TAS[Vlista,Ttras]^.elem[1]:=Velemento;
+        TAS[Vlista,Ttras]^.elem[2]:=Vlistap;
+        TAS[Vlista,Ttras]^.cant:=2;
 
         new(TAS[Vlista,Tcolumnas]);
         TAS[Vlista,Tcolumnas]^.elem[1]:=Velemento;
@@ -722,9 +722,9 @@ procedure cargarTAS(var TAS: t_TAS);
         TAS[Velemento,Tparentesisa]^.elem[1]:=Vop;
         TAS[Velemento,Tparentesisa]^.cant:=1;
 
-        new(TAS[Velemento,Ttrans]);
-        TAS[Velemento,Ttrans]^.elem[1]:=Vop;
-        TAS[Velemento,Ttrans]^.cant:=1;
+        new(TAS[Velemento,Ttras]);
+        TAS[Velemento,Ttras]^.elem[1]:=Vop;
+        TAS[Velemento,Ttras]^.cant:=1;
 
         new(TAS[Velemento,Tcolumnas]);
         TAS[Velemento,Tcolumnas]^.elem[1]:=Vop;
