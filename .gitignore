@@ -1,4 +1,4 @@
-.exe
-.o
-.ppu
+*.exe
+*.o
+*.ppu
 pruebas.pas
