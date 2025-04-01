@@ -513,7 +513,8 @@ procedure cargarTAS(var TAS: t_TAS);
 
         new(TAS[Vop4,Tid]);
         TAS[Vop4,Tid]^.elem[1]:=Tid;
-        TAS[Vop4,Tid]^.cant:=1;
+        TAS[Vop4,Tid]^.elem[2]:=Vop4p;
+        TAS[Vop4,Tid]^.cant:=2;
 
         new(TAS[Vop4,Tcorchetea]);
         TAS[Vop4,Tcorchetea]^.elem[1]:=Vcmatriz;
@@ -872,6 +873,66 @@ procedure cargarTAS(var TAS: t_TAS);
 
         new(TAS[Vexpresionlp,pesos]);
         TAS[Vexpresionlp,pesos]^.cant:=0;
+
+
+        new(TAS[Vop4p,Tpuntoyc]);
+        TAS[Vop4p,Tpuntoyc]^.cant:=0;
+
+        new(TAS[Vop4p,Tcorchetea]);
+        TAS[Vop4p,Tcorchetea]^.elem[1]:=Tcorchetea;
+        TAS[Vop4p,Tcorchetea]^.elem[2]:=Vop;
+        TAS[Vop4p,Tcorchetea]^.elem[3]:=Tcorchetec;
+        TAS[Vop4p,Tcorchetea]^.elem[4]:=Tcorchetea;
+        TAS[Vop4p,Tcorchetea]^.elem[5]:=Vop;
+        TAS[Vop4p,Tcorchetea]^.elem[6]:=Tcorchetec;
+        TAS[Vop4p,Tcorchetea]^.cant:=6;
+
+        new(TAS[Vop4p,Tcorchetec]);
+        TAS[Vop4p,Tcorchetec]^.cant:=0;
+
+        new(TAS[Vop4p,Tmas]);
+        TAS[Vop4p,Tmas]^.cant:=0;
+
+        new(TAS[Vop4p,Tmenos]);
+        TAS[Vop4p,Tmenos]^.cant:=0;
+
+        new(TAS[Vop4p,Tmulti]);
+        TAS[Vop4p,Tmulti]^.cant:=0;
+ 
+        new(TAS[Vop4p,Tdivi]);
+        TAS[Vop4p,Tdivi]^.cant:=0;
+
+        new(TAS[Vop4p,Texpo]);
+        TAS[Vop4p,Texpo]^.cant:=0;
+
+        new(TAS[Vop4p,Tparentesisc]);
+        TAS[Vop4p,Tparentesisc]^.cant:=0;
+
+        new(TAS[Vop4p,Tcoma]);
+        TAS[Vop4p,Tcoma]^.cant:=0;
+
+        new(TAS[Vop4p,Tmayor]);
+        TAS[Vop4p,Tmayor]^.cant:=0;
+
+        new(TAS[Vop4p,Tmenor]);
+        TAS[Vop4p,Tmenor]^.cant:=0;
+
+        new(TAS[Vop4p,Tmayori]);
+        TAS[Vop4p,Tmayori]^.cant:=0;
+
+        new(TAS[Vop4p,Tmenori]);
+        TAS[Vop4p,Tmenori]^.cant:=0;
+
+        new(TAS[Vop4p,Tigual]);
+        TAS[Vop4p,Tigual]^.cant:=0;
+
+        new(TAS[Vop4p,Tdiferente]);
+        TAS[Vop4p,Tdiferente]^.cant:=0;
+
+        new(TAS[Vop4p,Tpregunta]);
+        TAS[Vop4p,Tpregunta]^.cant:=0;
+
+        
 
     end;
 

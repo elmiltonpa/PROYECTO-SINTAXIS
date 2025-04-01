@@ -48,7 +48,7 @@ procedure evaluar_op_2_prima(var arbol: puntero_arbol; var estado: t_estado; var
 procedure evaluar_op_3(var arbol: puntero_arbol; var estado: t_estado; var valor:real; var matriz:t_tipo_matriz; var tipo:t_tipo; var lexema:string);
 procedure evaluar_op_3_prima(var arbol: puntero_arbol; var estado: t_estado; var valor:real; var matriz:t_tipo_matriz;var tipo_izq:t_tipo;var lexema_izq:string);
 procedure evaluar_op_4(var arbol: puntero_arbol; var estado: t_estado; var valor:real;var matriz:t_tipo_matriz;var tipo:t_tipo;var lexema:string);
-procedure evaluar_cmatriz(var arbol: puntero_arbol; var estado: t_estado; var matriz:t_tipo_matriz;var fila,columna:integer);
+procedure evaluar_op_4_prima(var arbol: puntero_arbol; var estado: t_estado; var valor:real;var matriz:t_tipo_matriz;var tipo:t_tipo;var lexema:string ;var fila,columna:integer);procedure evaluar_cmatriz(var arbol: puntero_arbol; var estado: t_estado; var matriz:t_tipo_matriz;var fila,columna:integer);
 procedure evaluar_filas(var arbol: puntero_arbol; var estado: t_estado; var matriz:t_tipo_matriz;var fila,columna:integer);
 procedure evaluar_filas_extra(var arbol: puntero_arbol; var estado: t_estado; var matriz:t_tipo_matriz;var fila,columna:integer);
 procedure evaluar_fila(var arbol: puntero_arbol; var estado: t_estado; var matriz:t_tipo_matriz;var fila,columna:integer);
@@ -391,6 +391,7 @@ function pasar_a_matriz(lexema: string; var matriz: t_tipo_matriz;var filas, col
     matriz_valida: boolean;
 
     begin
+        inicializar_matriz_NaN(matriz, max_matriz, max_matriz);
         Delete(lexema, 1, 1);
         Delete(lexema, Length(lexema), 1);
 
@@ -575,14 +576,15 @@ procedure evaluar_asignacion_prima(var arbol: puntero_arbol; var estado: t_estad
                     if tipo = Tmatriz_estado then
                         begin
                             obtener_matriz(estado,lexema,matriz);
+                            
                             evaluar_op(arbol^.hijos.elem[2], estado,valor,matriz,tipo,lexema_der);
 
-                            obtener_dimensiones_cmatriz(matriz,fila_cmatriz,columna_cmatriz);
                             obtener_dimensiones(estado,lexema, fila,columna);
+
+                            obtener_dimensiones_cmatriz(matriz,fila_cmatriz,columna_cmatriz);
 
                             if (fila = fila_cmatriz) and (columna = columna_cmatriz) then
                                 begin
-                                    
                                     asignar_matriz(estado,lexema,matriz);
                                 end
                             else
@@ -831,12 +833,13 @@ procedure evaluar_op_3_prima(var arbol: puntero_arbol; var estado: t_estado; var
             end;
     end;
     
-// <OP4> ::= <CMatriz> | “id” | “creal” | “filas” “(“ “id” “)” | “columnas” “(“ “id” “)” 
+// <OP4> ::= <CMatriz> | “id” <OP4'> | “creal” | “filas” “(“ “id” “)” | “columnas” “(“ “id” “)” 
 //                     | "trans" "(" "id" ")" | “-” <OP4> | “(“ <OP> “)” 
 procedure evaluar_op_4(var arbol: puntero_arbol; var estado: t_estado; var valor:real;var matriz:t_tipo_matriz;var tipo:t_tipo;var lexema:string);
     var
-        fila,columna:integer;
+        fila,columna,fila_acc,columna_acc:integer;
         matriz_transpuesta:t_tipo_matriz;
+        lexema_der:string;
     begin
         case arbol^.hijos.elem[1]^.simbolo of
             Tid: begin
@@ -847,7 +850,21 @@ procedure evaluar_op_4(var arbol: puntero_arbol; var estado: t_estado; var valor
                              valor := valor_de_real(estado, lexema);
                             end;
                         Tmatriz_estado:begin
-                         matriz := valor_de_matriz(estado, lexema);
+                                         if arbol^.hijos.cant > 1 then
+                                            begin
+                                                lexema:=arbol^.hijos.elem[1]^.lexema;
+                                                evaluar_op_4_prima(arbol^.hijos.elem[2], estado,valor,matriz,tipo,lexema_der,fila_acc,columna_acc);
+                                                obtener_matriz(estado, lexema, matriz);
+                                                obtener_dimensiones(estado, lexema, fila,columna);
+                                                if (fila_acc > fila) or (columna_acc > columna) then
+                                                    writeln('Error: La matriz declarada tiene menores filas o columnas que la que estoy intendo acceder')
+                                                else
+                                                    begin
+                                                        valor := matriz[fila_acc,columna_acc];
+                                                    end;
+                                            end
+                                        else
+                                            matriz := valor_de_matriz(estado, lexema);
                         end;
                     end;
                  end;
@@ -915,6 +932,24 @@ procedure evaluar_op_4(var arbol: puntero_arbol; var estado: t_estado; var valor
         end;
     end;
 
+// <OP4'> ::= "[" <OP> "]" "[" <OP> "]" | eps
+procedure evaluar_op_4_prima(var arbol: puntero_arbol; var estado: t_estado; var valor:real;var matriz:t_tipo_matriz;var tipo:t_tipo;var lexema:string ;var fila,columna:integer);
+    var
+        fila_op,columna_op:integer;
+    begin
+        if arbol^.hijos.cant > 0 then
+            begin
+                evaluar_op(arbol^.hijos.elem[2], estado,valor,matriz,tipo,lexema);
+                fila_op := trunc(valor);
+                evaluar_op(arbol^.hijos.elem[5], estado,valor,matriz,tipo,lexema);
+                columna_op := trunc(valor);
+                fila:= fila_op;
+                columna:= columna_op;
+                
+                
+            end;
+    end;
+
 // <CMatriz> ::= "[" <Filas> "]”
 procedure evaluar_cmatriz(var arbol: puntero_arbol; var estado: t_estado; var matriz:t_tipo_matriz;var fila,columna:integer);
     begin
@@ -968,10 +1003,7 @@ procedure evaluar_numeros(var arbol: puntero_arbol; var estado: t_estado; var ma
         lexema:string;
         valor:real;
     begin
-
         evaluar_op_4(arbol^.hijos.elem[1], estado,valor,matriz,tipo,lexema);
-
-
         if tipo = Treal_estado then
             begin
                 matriz[fila,columna] := valor;
@@ -1000,7 +1032,7 @@ procedure evaluar_leer(var arbol: puntero_arbol; var estado: t_estado);
         matriz:t_tipo_matriz;
         lexema,cadena: string;
         tipo: t_tipo;
-        filas, columnas: integer;
+        filas, columnas, filas_cmatriz, columnas_cmatriz: integer;
 
     begin
         lexema := arbol^.hijos.elem[5]^.lexema;
@@ -1020,11 +1052,20 @@ procedure evaluar_leer(var arbol: puntero_arbol; var estado: t_estado);
                 begin
                     if pasar_a_matriz(valor_leido, matriz, filas, columnas) then
                         begin
-                            agregar_matriz(estado, lexema, tipo, filas, columnas);
-                            asignar_matriz(estado, lexema, matriz)
+                            obtener_dimensiones(estado, lexema, filas, columnas);
+                            obtener_dimensiones_cmatriz(matriz, filas_cmatriz, columnas_cmatriz);
+                            if (filas <> filas_cmatriz) or (columnas <> columnas_cmatriz) then
+                                writeln('Error: La matriz ingresada no tiene las dimensiones correctas')
+                            else
+                                begin
+                                    agregar_matriz(estado, lexema, tipo, filas, columnas);
+                                    asignar_matriz(estado, lexema, matriz)
+                                end;
+                          
                         end
                     else
                         writeln('Error: La matriz ingresada no es válida');
+                    
                 end;
         end;
     end;

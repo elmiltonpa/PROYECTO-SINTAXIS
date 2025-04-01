@@ -18,7 +18,7 @@ TYPE
               Tmas , Tmenos , Tmulti , Tdivi , Texpo , Tcreal , Tfilas , Ttrans ,Tparentesisa , Tparentesisc , Tcolumnas , Tcoma , Tleer , 
               Tcadena , Tescribir , Tif , Telse, Twhile , Tnot , Tand , Tor , Tigual , Tdiferente, Tmayor , Tmenor , Tmayori ,Tpregunta , Tmenori,
               pesos,ErrorLexico ,Vprograma , Vdefiniciones, Vlistadefiniciones, Vmasdefiniciones , Vdefinicion , Vtipo , Vcuerpo ,
-              Vsentencias, Vasignacion, Vasignacionp, Vop , Vopp , Vop2 , Vop2p , Vop3 , Vop3p , Vop4 , Vcmatriz , Vfilas ,
+              Vsentencias, Vasignacion, Vasignacionp, Vop , Vopp , Vop2 , Vop2p , Vop3 , Vop3p , Vop4 , Vop4p , Vcmatriz , Vfilas ,
               Vfilasextra , Vfila , Vnumeros , Vnumerosp , Vleer , Vescribir , Vlista , Vlistap , Velemento , Vcondicional , Vsino , 
               Vciclo , Vcondicion , Vexpresionl , Vexpresionlp , Vexpresionr , Vcomparacion );
 
