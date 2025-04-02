@@ -575,10 +575,11 @@ procedure evaluar_asignacion_prima(var arbol: puntero_arbol; var estado: t_estad
                     obtener_tipo(estado,lexema,tipo);
                     if tipo = Tmatriz_estado then
                         begin
+           
                             obtener_matriz(estado,lexema,matriz);
-                            
+                        
                             evaluar_op(arbol^.hijos.elem[2], estado,valor,matriz,tipo,lexema_der);
-
+             
                             obtener_dimensiones(estado,lexema, fila,columna);
 
                             obtener_dimensiones_cmatriz(matriz,fila_cmatriz,columna_cmatriz);
@@ -850,22 +851,12 @@ procedure evaluar_op_4(var arbol: puntero_arbol; var estado: t_estado; var valor
                              valor := valor_de_real(estado, lexema);
                             end;
                         Tmatriz_estado:begin
-                                         if arbol^.hijos.cant > 1 then
-                                            begin
-                                                lexema:=arbol^.hijos.elem[1]^.lexema;
-                                                evaluar_op_4_prima(arbol^.hijos.elem[2], estado,valor,matriz,tipo,lexema_der,fila_acc,columna_acc);
-                                                obtener_matriz(estado, lexema, matriz);
-                                                obtener_dimensiones(estado, lexema, fila,columna);
-                                                if (fila_acc > fila) or (columna_acc > columna) then
-                                                    writeln('Error: La matriz declarada tiene menores filas o columnas que la que estoy intendo acceder')
-                                                else
-                                                    begin
-                                                        valor := matriz[fila_acc,columna_acc];
-                                                    end;
-                                            end
-                                        else
-                                            matriz := valor_de_matriz(estado, lexema);
-                        end;
+
+                                        obtener_matriz(estado, lexema, matriz);
+                                        
+                                        evaluar_op_4_prima(arbol^.hijos.elem[2], estado,valor,matriz,tipo,lexema,fila_acc,columna_acc);
+
+                                       end;
                     end;
                  end;
             Tcreal: begin
@@ -935,18 +926,22 @@ procedure evaluar_op_4(var arbol: puntero_arbol; var estado: t_estado; var valor
 // <OP4'> ::= "[" <OP> "]" "[" <OP> "]" | eps
 procedure evaluar_op_4_prima(var arbol: puntero_arbol; var estado: t_estado; var valor:real;var matriz:t_tipo_matriz;var tipo:t_tipo;var lexema:string ;var fila,columna:integer);
     var
-        fila_op,columna_op:integer;
+        fila_op,columna_op,fila_aux,columna_aux:integer;
+        lexema_aux:string;
     begin
         if arbol^.hijos.cant > 0 then
-            begin
-                evaluar_op(arbol^.hijos.elem[2], estado,valor,matriz,tipo,lexema);
+            begin   
+                evaluar_op(arbol^.hijos.elem[2], estado,valor,matriz,tipo,lexema_aux);
                 fila_op := trunc(valor);
-                evaluar_op(arbol^.hijos.elem[5], estado,valor,matriz,tipo,lexema);
+                evaluar_op(arbol^.hijos.elem[5], estado,valor,matriz,tipo,lexema_aux);
                 columna_op := trunc(valor);
-                fila:= fila_op;
-                columna:= columna_op;
-                
-                
+
+                obtener_dimensiones(estado, lexema, fila_aux,columna_aux);
+
+                if (fila_op > fila_aux) or (columna_op > columna_aux) then
+                    writeln('Error: La matriz declarada tiene menores filas que la que estoy intendo acceder')
+                else
+                    valor := matriz[fila_op,columna_op];   
             end;
     end;
 
