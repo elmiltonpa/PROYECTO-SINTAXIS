@@ -22,7 +22,7 @@ TYPE
         valor_matriz: t_tipo_matriz;
         dim_fila: integer;
         dim_columna: integer;
-
+        inicializado: boolean;
     end;
 
     t_estado = record
@@ -73,20 +73,6 @@ procedure evaluar_comparacion(var arbol:puntero_arbol;var estado:t_estado;var va
 
 IMPLEMENTATION
 
-procedure mostrar_matriz(var matriz:t_tipo_matriz; filas,columnas:integer);
-    var
-        i,j: integer;
-    begin
-        for i:=1 to filas do
-            begin
-                for j:=1 to columnas do
-                    begin
-                        write(matriz[i,j]:0:2, ' ');
-                    end;
-                writeln();
-            end;
-    end;
-
 procedure inicializar_estado(var estado: t_estado);
     begin
         estado.cant := 0;
@@ -99,6 +85,15 @@ procedure inicializar_matriz_NaN(var matriz:t_tipo_matriz);
         for i:=1 to max_matriz do
             for j:=1 to max_matriz do
                 matriz[i,j] := NaN;
+    end;
+
+procedure inicializar_matriz_parcial(var matriz:t_tipo_matriz; filas,columnas:integer);
+    var
+        i,j: integer;
+    begin
+        for i:=1 to filas do
+            for j:=1 to columnas do
+                matriz[i,j] := 0;
     end;
 
 function tipos_iguales(tipo1, tipo2: t_tipo): boolean;
@@ -146,10 +141,7 @@ procedure escribir_matriz(var matriz:t_tipo_matriz);
         for i:=1 to filas do
             begin
                 for j:=1 to columnas do
-                    begin
-                       
-                            write(matriz[i,j]:0:2, ' ');
-                    end;
+                    write(matriz[i,j]:0:2, ' ');
                 writeln();
             end;
     end;
@@ -158,6 +150,7 @@ procedure agregar_real(var estado: t_estado; id_lexema: string; tipo: t_tipo);
     begin
         estado.cant := estado.cant + 1;
         estado.elem[estado.cant].id_lexema := id_lexema;
+        estado.elem[estado.cant].inicializado := false;
         estado.elem[estado.cant].valor_real := 0;
         estado.elem[estado.cant].tipo := tipo;
     end;
@@ -168,6 +161,7 @@ procedure agregar_matriz(var estado: t_estado; id_lexema: string; tipo: t_tipo;v
     begin
         estado.cant := estado.cant + 1;
         estado.elem[estado.cant].id_lexema := id_lexema;
+        estado.elem[estado.cant].inicializado := false;
         estado.elem[estado.cant].tipo := tipo;
         estado.elem[estado.cant].dim_fila := filas;
         estado.elem[estado.cant].dim_columna := columnas;
@@ -184,6 +178,7 @@ procedure asignar_real(var estado: t_estado; id_lexema: string; valor: real);
             if estado.elem[i].id_lexema = id_lexema then
                 begin
                     estado.elem[i].valor_real := valor;
+                    estado.elem[i].inicializado := true;
                     exit;
                 end;
     end;
@@ -202,6 +197,20 @@ procedure asignar_matriz(var estado: t_estado; id_lexema: string; matriz: t_tipo
                             halt();
                         end;
                     estado.elem[i].valor_matriz := matriz;
+                    estado.elem[i].inicializado := true;
+                    exit;
+                end;
+    end;
+
+function variable_inicializada(var estado: t_estado; id_lexema: string): boolean;
+    var
+        i: integer;
+    begin
+        variable_inicializada := false;
+        for i := 1 to estado.cant do
+            if AnsiLowerCase(estado.elem[i].id_lexema) = AnsiLowerCase(id_lexema) then
+                begin
+                    variable_inicializada := estado.elem[i].inicializado;
                     exit;
                 end;
     end;
@@ -213,6 +222,11 @@ procedure asignar_valor_matriz(var estado: t_estado; valor: real; id_lexema: str
         for i := 1 to estado.cant do
             if AnsiLowerCase(estado.elem[i].id_lexema) = AnsiLowerCase(id_lexema) then
                 begin
+                    if not estado.elem[i].inicializado then
+                        begin
+                            inicializar_matriz_parcial(estado.elem[i].valor_matriz, estado.elem[i].dim_fila, estado.elem[i].dim_columna);
+                            estado.elem[i].inicializado := true;
+                        end;
                     estado.elem[i].valor_matriz[fila, columna] := valor;
                     exit;
                 end;
@@ -419,8 +433,6 @@ function pasar_a_matriz(lexema: string; var matriz: t_tipo_matriz): boolean;
 
     begin
         inicializar_matriz_NaN(matriz);
-
-
         if (Length(lexema) < 4) or (lexema[1] <> '[') or (lexema[Length(lexema)] <> ']') then
             begin
                 WriteLn('Error: Formato inválido.');
@@ -499,8 +511,6 @@ function matrices_iguales(var A, B: t_tipo_matriz):boolean;
                         end;
         matrices_iguales := iguales;
     end;
-
-
 
 // <Programa> ::= "program" "id" ";" <Definiciones> "{" <Cuerpo> "}"
 procedure evaluar_programa(var arbol: puntero_arbol; var estado: t_estado);
@@ -628,19 +638,16 @@ procedure evaluar_asignacion_prima(var arbol: puntero_arbol; var estado: t_estad
                 end;
             Tcorchetea:
                 begin
-                  
                     obtener_dimensiones(estado, lexema, fila, columna);
                     evaluar_op(arbol^.hijos.elem[2], estado, fila_op, matriz,tipo_2);
                     evaluar_op(arbol^.hijos.elem[5], estado, columna_op, matriz,tipo_2);
                     evaluar_op(arbol^.hijos.elem[8], estado, valor, matriz,tipo_2);
-                    // fila_op := trunc(fila_op);
-                    // columna_op := trunc(columna_op);
                   
                     if (fila_op > 0) and (columna_op > 0) and (fila_op <= fila) and (columna_op <= columna) then
                         begin
                             columna := trunc(columna_op);
                             fila := trunc(fila_op);
-                            if tipo_1 = Tmatriz_estado then
+                            if (tipo_1 = Tmatriz_estado) and (tipo_2 = Treal_estado) then
                                 asignar_valor_matriz(estado, valor, lexema, fila, columna)
                             else
                                 begin
@@ -850,7 +857,12 @@ procedure evaluar_op_4(var arbol: puntero_arbol; var estado: t_estado; var valor
                 begin
                     lexema := arbol^.hijos.elem[1]^.lexema;
                     obtener_tipo(estado, lexema, tipo);
-                    // IF INICIALIZADO 
+ 
+                    if not variable_inicializada(estado, lexema) then
+                        begin
+                            writeln('Error: La variable ', lexema, ' no ha sido inicializada');
+                            halt();
+                        end;
                     if tipo = Treal_estado then
                         obtener_real(estado, lexema, valor)
                     else 
@@ -869,16 +881,13 @@ procedure evaluar_op_4(var arbol: puntero_arbol; var estado: t_estado; var valor
             Tfilas:
                 begin
                     lexema := arbol^.hijos.elem[3]^.lexema;
-                    // IF INICIALIZADO
                     obtener_dimensiones(estado, lexema, fila, columna);
                     valor := fila;
                     tipo := Treal_estado;
                 end;
             Tcolumnas:
                 begin
-
                     lexema := arbol^.hijos.elem[3]^.lexema;
-                    // IF INICIALIZADO
                     obtener_dimensiones(estado, lexema, fila, columna);
                     valor := columna;
                     tipo := Treal_estado;
@@ -886,7 +895,12 @@ procedure evaluar_op_4(var arbol: puntero_arbol; var estado: t_estado; var valor
             Ttras:
                 begin
                     lexema := arbol^.hijos.elem[3]^.lexema;
-                    // IF INICIALIZADO
+               
+                    if not variable_inicializada(estado, lexema) then
+                        begin
+                            writeln('Error: La variable ', lexema, ' no ha sido inicializada');
+                            halt();
+                        end;
                     obtener_tipo(estado, lexema, tipo);
                     if tipo <> Tmatriz_estado then
                         begin
@@ -1086,6 +1100,18 @@ procedure evaluar_lista_prima(var arbol: puntero_arbol; var estado: t_estado);
         if arbol^.hijos.cant > 0 then
             evaluar_lista(arbol^.hijos.elem[2], estado);
     end;
+// TODO AL MOSTRAR UNA MATRIZ MOSTRAR CON CORCHETES Y SIN ESPACIOS ENTRE LOS VALORES
+// TODO TAMBIEN SI UNA MATRI TIENE NAN EN ALGUN ELEMENTO MOSTRAR -- EN VES DE NAN
+// EJ [[1,2],[3,4]] -> 
+
+    // | 1 2 |
+    // | 3 4 |
+
+// EJ [[1,2],[NAN,4]] -> 
+
+    // | 1 2 |
+    // | - 4 |
+
 
 // <Elemento> ::= “cadena” | <OP>
 procedure evaluar_elemento(var arbol: puntero_arbol; var estado: t_estado);
@@ -1223,7 +1249,7 @@ procedure evaluar_comparacion(var arbol:puntero_arbol;var estado:t_estado;var va
         if tipo_izq <> tipo_der then
             begin
                 writeln('Error: No se puede comparar valor de distinto tipo');
-
+                halt();
             end
         else
             begin

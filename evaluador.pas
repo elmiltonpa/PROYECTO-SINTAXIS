@@ -22,6 +22,7 @@ TYPE
         valor_matriz: t_tipo_matriz;
         dim_fila: integer;
         dim_columna: integer;
+        inicializado: boolean;
     end;
 
     t_estado = record
@@ -29,26 +30,27 @@ TYPE
         cant: word;
     end;
 
-
-procedure inicializar_estado(var estado: t_estado); 
+procedure inicializar_estado(var estado: t_estado);
 procedure evaluar_programa(var arbol: puntero_arbol; var estado: t_estado);
 procedure evaluar_definiciones(var arbol: puntero_arbol; var estado: t_estado);
 procedure evaluar_lista_definiciones(var arbol: puntero_arbol; var estado: t_estado);
 procedure evaluar_mas_definiciones(var arbol: puntero_arbol; var estado: t_estado);
 procedure evaluar_definicion(var arbol: puntero_arbol; var estado: t_estado);
-procedure evaluar_tipo(var arbol: puntero_arbol; var estado: t_estado;var id:string);
+procedure evaluar_tipo(var arbol: puntero_arbol; var estado: t_estado; id_lexema: string);
 procedure evaluar_cuerpo(var arbol: puntero_arbol; var estado: t_estado);
 procedure evaluar_sentencias(var arbol: puntero_arbol; var estado: t_estado);
 procedure evaluar_asignacion(var arbol: puntero_arbol; var estado: t_estado);
-procedure evaluar_asignacion_prima(var arbol: puntero_arbol; var estado: t_estado;var lexema:string);
-procedure evaluar_op(var arbol: puntero_arbol; var estado: t_estado; var valor:real; var matriz:t_tipo_matriz;var tipo:t_tipo;var lexema:string);
-procedure evaluar_op_prima(var arbol: puntero_arbol; var estado: t_estado; var valor: real; var matriz:t_tipo_matriz;var tipo:t_tipo;var lexema:string);
-procedure evaluar_op_2(var arbol: puntero_arbol; var estado: t_estado; var valor:real; var matriz:t_tipo_matriz; var tipo:t_tipo; var lexema:string);
-procedure evaluar_op_2_prima(var arbol: puntero_arbol; var estado: t_estado; var valor:real; var matriz:t_tipo_matriz; var tipo:t_tipo; var lexema:string);
-procedure evaluar_op_3(var arbol: puntero_arbol; var estado: t_estado; var valor:real; var matriz:t_tipo_matriz; var tipo:t_tipo; var lexema:string);
-procedure evaluar_op_3_prima(var arbol: puntero_arbol; var estado: t_estado; var valor:real; var matriz:t_tipo_matriz;var tipo_izq:t_tipo;var lexema_izq:string);
-procedure evaluar_op_4(var arbol: puntero_arbol; var estado: t_estado; var valor:real;var matriz:t_tipo_matriz;var tipo:t_tipo;var lexema:string);
-procedure evaluar_op_4_prima(var arbol: puntero_arbol; var estado: t_estado; var valor:real;var matriz:t_tipo_matriz;var tipo:t_tipo;var lexema:string ;var fila,columna:integer);procedure evaluar_cmatriz(var arbol: puntero_arbol; var estado: t_estado; var matriz:t_tipo_matriz;var fila,columna:integer);
+procedure evaluar_asignacion_prima(var arbol: puntero_arbol; var estado: t_estado; lexema: string);
+procedure evaluar_asignacion_prima_prima(var arbol: puntero_arbol; var estado: t_estado;var valor: real; var matriz: t_tipo_matriz; var tipo_2: t_tipo);
+procedure evaluar_op(var arbol: puntero_arbol; var estado: t_estado; var valor: real; var matriz: t_tipo_matriz; var tipo: t_tipo);
+procedure evaluar_op_prima(var arbol: puntero_arbol; var estado: t_estado; var valor: real; var matriz: t_tipo_matriz; var tipo: t_tipo);
+procedure evaluar_op_2(var arbol: puntero_arbol; var estado: t_estado; var valor:real; var matriz:t_tipo_matriz; var tipo:t_tipo);
+procedure evaluar_op_2_prima(var arbol: puntero_arbol; var estado: t_estado; var valor: real; var matriz: t_tipo_matriz; var tipo: t_tipo);
+procedure evaluar_op_3(var arbol: puntero_arbol; var estado: t_estado; var valor: real; var matriz: t_tipo_matriz; var tipo: t_tipo);
+procedure evaluar_op_3_prima(var arbol: puntero_arbol; var estado: t_estado; var valor: real; var matriz: t_tipo_matriz; var tipo: t_tipo);
+procedure evaluar_op_4(var arbol: puntero_arbol; var estado: t_estado; var valor: real; var matriz: t_tipo_matriz; var tipo: t_tipo);
+procedure evaluar_op_4_prima(var arbol: puntero_arbol; var estado: t_estado; var valor: real; var matriz: t_tipo_matriz; var tipo: t_tipo);
+procedure evaluar_cmatriz(var arbol: puntero_arbol; var estado: t_estado; var matriz:t_tipo_matriz);
 procedure evaluar_filas(var arbol: puntero_arbol; var estado: t_estado; var matriz:t_tipo_matriz;var fila,columna:integer);
 procedure evaluar_filas_extra(var arbol: puntero_arbol; var estado: t_estado; var matriz:t_tipo_matriz;var fila,columna:integer);
 procedure evaluar_fila(var arbol: puntero_arbol; var estado: t_estado; var matriz:t_tipo_matriz;var fila,columna:integer);
@@ -59,9 +61,9 @@ procedure evaluar_escribir(var arbol: puntero_arbol; var estado: t_estado);
 procedure evaluar_lista(var arbol: puntero_arbol; var estado: t_estado);
 procedure evaluar_lista_prima(var arbol: puntero_arbol; var estado: t_estado);
 procedure evaluar_elemento(var arbol: puntero_arbol; var estado: t_estado);
-procedure evaluar_condicional(var arbol:puntero_arbol; var estado:t_estado);
 procedure evaluar_si_no(var arbol:puntero_arbol; var estado:t_estado);
-procedure evaluar_ciclo(var arbol:puntero_arbol; var estado:t_estado);
+procedure evaluar_condicional(var arbol: puntero_arbol; var estado: t_estado);
+procedure evaluar_ciclo(var arbol: puntero_arbol; var estado: t_estado);
 procedure evaluar_condicion(var arbol:puntero_arbol; var estado:t_estado; var resultado_condicion:boolean);
 procedure evaluar_expresion_l(var arbol:puntero_arbol; var estado:t_estado; var resultado_condicion:boolean);
 procedure evaluar_expresion_l_prima(var arbol:puntero_arbol; var estado:t_estado; var resultado_condicion:boolean);
@@ -69,20 +71,34 @@ procedure evaluar_expresion_r(var arbol:puntero_arbol; var estado:t_estado; var 
 procedure evaluar_comparacion(var arbol:puntero_arbol;var estado:t_estado;var valor_izq,valor_der:real;var matriz_izq,matriz_der:t_tipo_matriz;
                               var tipo_izq,tipo_der:t_tipo;var resultado_condicion:boolean);
 
-IMPLEMENTATION  
+IMPLEMENTATION
 
 procedure inicializar_estado(var estado: t_estado);
     begin
         estado.cant := 0;
     end;
 
-procedure inicializar_matriz_NaN(var matriz:t_tipo_matriz; filas,columnas:integer);
+procedure inicializar_matriz_NaN(var matriz:t_tipo_matriz);
+    var
+        i,j: integer;
+    begin
+        for i:=1 to max_matriz do
+            for j:=1 to max_matriz do
+                matriz[i,j] := NaN;
+    end;
+
+procedure inicializar_matriz_parcial(var matriz:t_tipo_matriz; filas,columnas:integer);
     var
         i,j: integer;
     begin
         for i:=1 to filas do
             for j:=1 to columnas do
-                matriz[i,j] := NaN;
+                matriz[i,j] := 0;
+    end;
+
+function tipos_iguales(tipo1, tipo2: t_tipo): boolean;
+    begin
+        tipos_iguales := (tipo1 = tipo2);
     end;
 
 function pasar_a_real(lexema:string):real;
@@ -90,308 +106,340 @@ function pasar_a_real(lexema:string):real;
         valor: real;
         codigo: integer;
     begin
-        valor := 0;
-        // lexema := Copy(lexema, 1, Length(lexema) - 1);
         val(lexema, valor, codigo);
+        if codigo <> 0 then
+            begin
+                writeln('Error: No se puede convertir a real el valor ', lexema);
+                halt();
+            end;
         pasar_a_real := valor;
     end;
 
-function valor_de_real(var estado: t_estado; lexema:string):real;
+procedure obtener_dimensiones_cmatriz(var matriz:t_tipo_matriz; var filas,columnas:integer);
     var
-        i: integer;
+        i,j: integer;
     begin
-        for i:=1 to estado.cant do
+        filas := 0;
+        columnas := 0;
+
+        for i:=1 to max_matriz do
+            for j:=1 to max_matriz do
+                if not IsNan(matriz[i,j]) then
+                    begin
+                        if i > filas then
+                            filas := i;
+                        if j > columnas then
+                            columnas := j;
+                    end;
+    end;
+
+procedure escribir_matriz(var matriz:t_tipo_matriz);
+    var
+        i,j,filas,columnas: integer;
+    begin
+        obtener_dimensiones_cmatriz(matriz, filas, columnas);
+        for i:=1 to filas do
             begin
-            if AnsiLowerCase(estado.elem[i].id_lexema) = AnsiLowerCase(lexema) then
-                begin
-                    valor_de_real := estado.elem[i].valor_real;
-                end;
+                for j:=1 to columnas do
+                    write(matriz[i,j]:0:2, ' ');
+                writeln();
             end;
     end;
 
-function valor_de_matriz(var estado: t_estado;var lexema:string):t_tipo_matriz;
-    var
-        i: integer;
-    begin
-        for i:=1 to estado.cant do
-            if AnsiLowerCase(estado.elem[i].id_lexema) = AnsiLowerCase(lexema) then
-                begin
-                    valor_de_matriz := estado.elem[i].valor_matriz;
-                end;
-    end;
-
-procedure obtener_dimensiones_cmatriz(var matriz:t_tipo_matriz; var fila, columna: integer);
-var
-    i, j: integer;
-begin
-    fila := 0;  
-    columna := 0; 
-    for i := 1 to 6 do 
-        begin
-            for j := 1 to 6 do
-                begin
-                    if not IsNan(matriz[i, j]) then
-                        begin
-                            if i > fila then
-                                fila := i;
-                            if j > columna then
-                                columna := j;
-                        end;
-                end;
-        end;
-end;
-
-
-procedure mostrar_matriz(matriz: t_tipo_matriz; filas, columnas: integer);
-    var
-        i, j: integer;
-    begin
-        for i := 1 to filas do
-        begin
-            for j := 1 to columnas do
-                write(matriz[i, j]:0:2, ' ');
-            writeln;
-        end;
-    end;
-
-procedure agregar_real(var estado: t_estado; var lexema:string; var tipo:t_tipo);
+procedure agregar_real(var estado: t_estado; id_lexema: string; tipo: t_tipo);
     begin
         estado.cant := estado.cant + 1;
-        estado.elem[estado.cant].id_lexema := lexema;
+        estado.elem[estado.cant].id_lexema := id_lexema;
+        estado.elem[estado.cant].inicializado := false;
         estado.elem[estado.cant].valor_real := 0;
         estado.elem[estado.cant].tipo := tipo;
     end;
 
-procedure agregar_matriz(var estado: t_estado; var lexema:string; var tipo:t_tipo; fila,columna:integer);
+procedure agregar_matriz(var estado: t_estado; id_lexema: string; tipo: t_tipo;var filas,columnas: integer);
     var
         i,j: integer;
     begin
         estado.cant := estado.cant + 1;
-        estado.elem[estado.cant].id_lexema := lexema;
-        estado.elem[estado.cant].dim_fila := fila;
-        estado.elem[estado.cant].dim_columna := columna;
+        estado.elem[estado.cant].id_lexema := id_lexema;
+        estado.elem[estado.cant].inicializado := false;
         estado.elem[estado.cant].tipo := tipo;
+        estado.elem[estado.cant].dim_fila := filas;
+        estado.elem[estado.cant].dim_columna := columnas;
         for i:=1 to max_matriz do
             for j:=1 to max_matriz do
                 estado.elem[estado.cant].valor_matriz[i,j] := NaN;
-            
     end;
 
-procedure asignar_matriz(var estado:t_estado;lexema_izq:string;var matriz_der:t_tipo_matriz);
-    var
-        i: integer;
-
-    begin
-        for i:=1 to estado.cant do
-            begin
-                if AnsiLowerCase(estado.elem[i].id_lexema) = AnsiLowerCase(lexema_izq) then
-                    begin
-                        
-                        estado.elem[i].valor_matriz := matriz_der;
-                    end;
-            end;
-    end;
-
-procedure asignar_valor_matriz(var estado:t_estado; lexema:string;var  valor:real;var fila,columna:integer);
+procedure asignar_real(var estado: t_estado; id_lexema: string; valor: real);
     var
         i: integer;
     begin
-
-        for i:=1 to estado.cant do
-            begin
-                if AnsiLowerCase(estado.elem[i].id_lexema) = AnsiLowerCase(lexema) then
-                    begin
-          
-                        estado.elem[i].valor_matriz[fila,columna] := valor;
-                    end;
-            end;
+        for i := 1 to estado.cant do
+            if estado.elem[i].id_lexema = id_lexema then
+                begin
+                    estado.elem[i].valor_real := valor;
+                    estado.elem[i].inicializado := true;
+                    exit;
+                end;
     end;
 
-procedure asignar_real(var estado:t_estado;var lexema_izq:string;var valor_der:real);
-    var 
-        i: integer;
-
-    begin
-        for i:=1 to estado.cant do
-            begin
-                if AnsiLowerCase(estado.elem[i].id_lexema) = AnsiLowerCase(lexema_izq) then
-                    begin
-                      
-                        estado.elem[i].valor_real := valor_der;
-                    end;
-            end;
-    end;
-
-procedure obtener_tipo(var estado: t_estado; lexema:string; var tipo:t_tipo);
+procedure asignar_matriz(var estado: t_estado; id_lexema: string; matriz: t_tipo_matriz);
     var
-        i: integer;
+        i,filas,columnas: integer;
     begin
-        for i:=1 to estado.cant do
-            begin
-                if AnsiLowerCase(estado.elem[i].id_lexema) = AnsiLowerCase(lexema) then
-                    tipo := estado.elem[i].tipo;
-            end;
-    end;
-
-procedure obtener_matriz(var estado: t_estado;var lexema:string; var matriz:t_tipo_matriz);
-    var
-        i: integer;
-    begin
-        for i:=1 to estado.cant do
-            begin
-                if AnsiLowerCase(estado.elem[i].id_lexema) = AnsiLowerCase(lexema) then
-                    begin
-                        matriz := estado.elem[i].valor_matriz;
-                    end;
-            end;
-    end;
-
-procedure obtener_dimensiones(var estado: t_estado; lexema:string; var fila,columna:integer);
-    var
-        i: integer;
-    begin
-        for i:=1 to estado.cant do
-            begin
-                if AnsiLowerCase(estado.elem[i].id_lexema) = AnsiLowerCase(lexema) then
-                    begin
-                        fila := estado.elem[i].dim_fila;
-                        columna := estado.elem[i].dim_columna;
-                    end;
-            end;
-    end;
-
-procedure transponer_matriz(var matriz:t_tipo_matriz; var matriz_transpuesta:t_tipo_matriz; fila,columna:integer);
-    var
-        i,j: integer;
-    begin
-        inicializar_matriz_NaN(matriz_transpuesta,max_matriz,max_matriz);
-        for i:=1 to fila do
-            for j:=1 to columna do
-                matriz_transpuesta[j,i] := matriz[i,j];
-    end;
-
-
-procedure multiplicar_matrices(var A, B, resultado: t_tipo_matriz; filas_A, columnas_A, filas_B, columnas_B: integer);
-var
-    i, j, k: integer;
-begin
-
-    inicializar_matriz_NaN(resultado, max_matriz, max_matriz);
-    if columnas_A <> filas_B then
-    begin
-        writeln('Error: Las dimensiones de las matrices no son compatibles para la multiplicación');
-        exit;
-    end;
-
-    for i := 1 to filas_A do
-        for j := 1 to columnas_B do
-            resultado[i, j] := 0;
-
-
-    for i := 1 to filas_A do
-        for j := 1 to columnas_B do
-            for k := 1 to columnas_A do  
-                resultado[i, j] := resultado[i, j] + A[i, k] * B[k, j];
-end;
-
-procedure potencia_matriz(var estado:t_estado; var matriz:t_tipo_matriz; potencia:real; lexema:string);
-    var 
-        i,j,n,k,l:integer;
-        matriz_resultado,matriz_aux:t_tipo_matriz;
-        potencia_aux:integer;
-        encontrado:boolean;
-    begin
-        encontrado := false;
-        if frac(potencia) <> 0 then
-            writeln('Error: No se puede elevar una matriz a una potencia no entera')
-        else
-            for i:=1 to estado.cant do
-                if AnsiLowerCase(estado.elem[i].id_lexema) = AnsiLowerCase(lexema) then
-                    if estado.elem[i].dim_columna <> estado.elem[i].dim_fila then
-                        writeln('Error: No se puede elevar una matriz que no sea cuadrada')
-                    else
-                        begin
-                            n := estado.elem[i].dim_fila;
-                            encontrado := true;
-                        end; 
-        if encontrado then
-            begin
-                inicializar_matriz_NaN(matriz_resultado, max_matriz, max_matriz);
-                inicializar_matriz_NaN(matriz_aux, max_matriz, max_matriz);
-                for j := 1 to n do
-                    for k := 1 to n do
-                        if k = j then
-                            matriz_resultado[k, j] := 1
-                        else
-                            matriz_resultado[k, j] := 0;
-
-                potencia_aux:=trunc(potencia);
-                matriz_aux := matriz;
-                if potencia_aux = 0 then
-                    begin
-                        for i := 1 to n do
-                            for j := 1 to n do
-                                if i = j then
-                                    matriz_resultado[i, j] := 1
-                                else
-                                    matriz_resultado[i, j] := 0;
-                    end
-                else
-                    if potencia_aux = 1 then
-                        begin
-                            matriz_resultado := matriz;
-                        end
-                    else
-                        begin
-                            for i := 1 to potencia_aux-1 do
-                                begin
-                                    multiplicar_matrices(matriz, matriz_aux, matriz_resultado, n, n, n, n);
-                                    matriz_aux := matriz_resultado;
-                                end;
+        obtener_dimensiones_cmatriz(matriz,filas,columnas);
+        for i := 1 to estado.cant do
+            if AnsiLowerCase(estado.elem[i].id_lexema) = AnsiLowerCase(id_lexema) then
+                begin
+                    if (estado.elem[i].dim_fila <> filas) or (estado.elem[i].dim_columna <> columnas) then
+                        begin 
+                            writeln('Error: La matriz ',id_lexema ,' no tiene la misma dimension que la que estoy asignando');
+                            halt();
                         end;
-                matriz := matriz_resultado;
-            end
-        else
-            writeln('Error: Matriz no encontrada');
+                    estado.elem[i].valor_matriz := matriz;
+                    estado.elem[i].inicializado := true;
+                    exit;
+                end;
     end;
 
-procedure matriz_escalar(var matriz:t_tipo_matriz; escalar:real; fila,columna:integer);
+function variable_inicializada(var estado: t_estado; id_lexema: string): boolean;
     var
-        i,j: integer;
+        i: integer;
     begin
+        variable_inicializada := false;
+        for i := 1 to estado.cant do
+            if AnsiLowerCase(estado.elem[i].id_lexema) = AnsiLowerCase(id_lexema) then
+                begin
+                    variable_inicializada := estado.elem[i].inicializado;
+                    exit;
+                end;
+    end;
+
+procedure asignar_valor_matriz(var estado: t_estado; valor: real; id_lexema: string; var fila,columna: integer);
+    var
+        i: integer;
+    begin
+        for i := 1 to estado.cant do
+            if AnsiLowerCase(estado.elem[i].id_lexema) = AnsiLowerCase(id_lexema) then
+                begin
+                    if not estado.elem[i].inicializado then
+                        begin
+                            inicializar_matriz_parcial(estado.elem[i].valor_matriz, estado.elem[i].dim_fila, estado.elem[i].dim_columna);
+                            estado.elem[i].inicializado := true;
+                        end;
+                    estado.elem[i].valor_matriz[fila, columna] := valor;
+                    exit;
+                end;
+    end;
+
+procedure obtener_tipo(var estado: t_estado; id_lexema: string; var tipo: t_tipo);
+    var
+        i: integer;
+    begin
+        for i := 1 to estado.cant do
+            if AnsiLowerCase(estado.elem[i].id_lexema) = AnsiLowerCase(id_lexema) then
+                begin
+                    tipo := estado.elem[i].tipo;
+                    exit;
+                end;
+    end;
+
+procedure obtener_matriz(var estado: t_estado; id_lexema: string; var matriz: t_tipo_matriz);
+    var
+        i: integer;
+    begin
+        for i := 1 to estado.cant do
+            if AnsiLowerCase(estado.elem[i].id_lexema) = AnsiLowerCase(id_lexema) then
+                begin
+                    matriz := estado.elem[i].valor_matriz;
+                    exit;
+                end;
+    end;
+
+procedure obtener_valor_matriz(var estado: t_estado; id_lexema: string; fila,columna: integer; var valor: real);
+    var
+        i: integer;
+    begin
+        for i := 1 to estado.cant do
+            if AnsiLowerCase(estado.elem[i].id_lexema) = AnsiLowerCase(id_lexema) then
+                begin
+                    valor := estado.elem[i].valor_matriz[fila, columna];
+                    exit;
+                end;
+    end;
+
+procedure obtener_real(var estado: t_estado; id_lexema: string; var valor: real);
+    var
+        i: integer;
+    begin
+        for i := 1 to estado.cant do
+            if AnsiLowerCase(estado.elem[i].id_lexema) = AnsiLowerCase(id_lexema) then
+                begin
+                    valor := estado.elem[i].valor_real;
+                    exit;
+                end;
+    end;
+
+procedure obtener_dimensiones(var estado: t_estado; id_lexema: string; var filas,columnas: integer);
+    var
+        i: integer;
+    begin
+        for i := 1 to estado.cant do
+            if AnsiLowerCase(estado.elem[i].id_lexema) = AnsiLowerCase(id_lexema) then
+                begin
+                    filas := estado.elem[i].dim_fila;
+                    columnas := estado.elem[i].dim_columna;
+                    exit;
+                end;
+    end;
+
+procedure trasponer_matriz(var matriz:t_tipo_matriz);
+    var
+        i,j,filas,columnas: integer;
+        aux: t_tipo_matriz;
+    begin
+        inicializar_matriz_NaN(aux);
+        obtener_dimensiones_cmatriz(matriz, filas, columnas);
+        for i:=1 to filas do
+            for j:=1 to columnas do
+                aux[j,i] := matriz[i,j];
+        matriz := aux;
+    end;
+
+procedure multiplicar_matrices(var matriz_1, matriz_2, resultado:t_tipo_matriz);
+    var
+        i,j,k,filas_1,columnas_1,filas_2,columnas_2: integer;
+    begin
+        inicializar_matriz_NaN(resultado);
+        obtener_dimensiones_cmatriz(matriz_1, filas_1, columnas_1);
+        obtener_dimensiones_cmatriz(matriz_2, filas_2, columnas_2);
+        if columnas_1 <> filas_2 then
+            begin
+                writeln('Error: Las matrices no se pueden multiplicar');
+                halt();
+            end;
+        for i:=1 to filas_1 do
+            for j:=1 to columnas_2 do
+                begin
+                    resultado[i,j] := 0;
+                    for k:=1 to columnas_1 do
+                        resultado[i,j] := resultado[i,j] + (matriz_1[i,k] * matriz_2[k,j]);
+                end;
+    end;
+
+procedure potencia_matriz(var matriz:t_tipo_matriz; potencia: real);
+    var
+        i,j,k,l,filas,columnas,dimension,potencia_aux: integer;
+        resultado,aux:t_tipo_matriz;
+    begin
+        inicializar_matriz_NaN(resultado);
+        obtener_dimensiones_cmatriz(matriz, filas, columnas);
+        potencia_aux := trunc(potencia);
+        if frac(potencia) <> 0 then
+            begin
+                writeln('Error: La potencia no puede ser decimal');
+                halt();
+            end;
+
+        if filas <> columnas then
+            begin
+                writeln('Error: La matriz no es cuadrada');
+                halt();
+            end;
+
+        if potencia_aux < 0 then
+            begin
+                writeln('Error: La potencia no puede ser negativa');
+                halt();
+            end;
+
+        dimension := filas;
+        if potencia_aux = 0 then
+            for i:=1 to dimension do
+                for j:=1 to dimension do
+                    if i = j then
+                        resultado[i,j] := 1
+                    else
+                        resultado[i,j] := 0;
+      
+        if potencia_aux > 1 then
+            begin
+               aux := matriz;
+               for k:=1 to potencia_aux-1 do
+                    begin
+                        for i:=1 to dimension do
+                            for j:=1 to dimension do
+                                begin
+                                    resultado[i,j] := 0;
+                                    for l:=1 to dimension do
+                                        resultado[i,j] := resultado[i,j] + (aux[i,l] * matriz[k,l]);
+                                end;
+                        aux := resultado;
+                    end;
+            end;
+        matriz := resultado;
+    end;
+
+procedure matriz_escalar(var matriz:t_tipo_matriz; escalar:real);
+    var
+        i,j,fila,columna: integer;
+    begin
+        obtener_dimensiones_cmatriz(matriz, fila, columna);
         for i:=1 to fila do
             for j:=1 to columna do
                 matriz[i,j] := matriz[i,j] * escalar;
     end;
 
-procedure suma_matrices(var A, B, resultado: t_tipo_matriz; fila,columna:integer);
+procedure suma_matriz(var matriz_1, matriz_2:t_tipo_matriz);
     var
-        i,j: integer;
+        i,j,filas,columnas,filas_2,columnas_2: integer;
     begin
-        inicializar_matriz_NaN(resultado, max_matriz, max_matriz);
-        for i:=1 to fila do
-            for j:=1 to columna do
-                resultado[i,j] := A[i,j] + B[i,j];
+        obtener_dimensiones_cmatriz(matriz_1, filas, columnas);
+        obtener_dimensiones_cmatriz(matriz_2, filas_2, columnas_2);
+        if (filas <> filas_2) or (columnas <> columnas_2) then
+            begin
+                writeln('Error: Las matrices no se pueden sumar por diferentes dimensiones');
+                halt();
+            end;
+        for i:=1 to filas do
+            for j:=1 to columnas do
+                matriz_1[i,j] := matriz_1[i,j] + matriz_2[i,j];
     end;
 
-procedure resta_matrices(var A, B, resultado: t_tipo_matriz; fila,columna:integer);
+procedure resta_matriz(var matriz_1, matriz_2:t_tipo_matriz);
     var
-        i,j: integer;
+        i,j,filas,columnas,filas_2,columnas_2: integer;
     begin
-        inicializar_matriz_NaN(resultado, max_matriz, max_matriz);
-        for i:=1 to fila do
-            for j:=1 to columna do
-                resultado[i,j] := A[i,j] - B[i,j];
+        obtener_dimensiones_cmatriz(matriz_1, filas, columnas);
+        obtener_dimensiones_cmatriz(matriz_2, filas_2, columnas_2);
+        if (filas <> filas_2) or (columnas <> columnas_2) then
+            begin
+                writeln('Error: Las matrices no se pueden restar por diferente dimension');
+                halt();
+            end;
+        for i:=1 to filas do
+            for j:=1 to columnas do
+                matriz_1[i,j] := matriz_1[i,j] - matriz_2[i,j];
     end;
 
-function pasar_a_matriz(lexema: string; var matriz: t_tipo_matriz;var filas, columnas: integer): boolean;
+
+
+function pasar_a_matriz(lexema: string; var matriz: t_tipo_matriz): boolean;
     var
     i, j, inicio_numero, columnas_actual: integer;
     fila_str, numero_str: string;
     matriz_valida: boolean;
+    filas,columnas: integer;
 
     begin
-        inicializar_matriz_NaN(matriz, max_matriz, max_matriz);
+        inicializar_matriz_NaN(matriz);
+        if (Length(lexema) < 4) or (lexema[1] <> '[') or (lexema[Length(lexema)] <> ']') then
+            begin
+                WriteLn('Error: Formato inválido.');
+                pasar_a_matriz := false;
+                Exit;
+            end;
+
         Delete(lexema, 1, 1);
         Delete(lexema, Length(lexema), 1);
 
@@ -402,7 +450,6 @@ function pasar_a_matriz(lexema: string; var matriz: t_tipo_matriz;var filas, col
 
         while i <= Length(lexema) do
         begin
-            // [1,2,3],[4,5,6],[7,8,9]
             if lexema[i] = '[' then
                 begin
                     filas := filas + 1;
@@ -414,7 +461,6 @@ function pasar_a_matriz(lexema: string; var matriz: t_tipo_matriz;var filas, col
                         begin
                             fila_str := fila_str + lexema[i];
                             i := i + 1;
-                            // 1,2,3
                         end;
                     j := 1;
                     inicio_numero := 1;
@@ -424,7 +470,7 @@ function pasar_a_matriz(lexema: string; var matriz: t_tipo_matriz;var filas, col
                                 begin
                                     columnas_actual := columnas_actual + 1;
                                     numero_str := Copy(fila_str, inicio_numero, j - inicio_numero + Ord(j = Length(fila_str)));
-                                    matriz[filas, columnas_actual] := StrToFloat(numero_str);
+                                    matriz[filas, columnas_actual] := pasar_a_real(numero_str);
                                     inicio_numero := j + 1;
                                 end;
                             j := j + 1;
@@ -446,18 +492,25 @@ function pasar_a_matriz(lexema: string; var matriz: t_tipo_matriz;var filas, col
 function matrices_iguales(var A, B: t_tipo_matriz):boolean;
     var
         i, j: integer;
-        filas, columnas: integer;
+        filas_A, columnas_A,filas_B,columnas_B: integer;
         iguales: boolean;
     begin
-        obtener_dimensiones_cmatriz(A, filas, columnas);
+        obtener_dimensiones_cmatriz(A, filas_A, columnas_A);
+        obtener_dimensiones_cmatriz(B, filas_B, columnas_B);
         iguales := true;
-        for i := 1 to filas do
-            for j := 1 to columnas do
-                if A[i, j] <> B[i, j] then
-                    iguales := false;
+
+        if (filas_A <> filas_B) or (columnas_A <> columnas_B) then
+                iguales := false
+        else
+            for i := 1 to filas_A do
+                for j := 1 to columnas_A do
+                    if A[i, j] <> B[i, j] then
+                        begin
+                            matrices_iguales := false;
+                            exit;
+                        end;
         matrices_iguales := iguales;
     end;
-
 
 // <Programa> ::= "program" "id" ";" <Definiciones> "{" <Cuerpo> "}"
 procedure evaluar_programa(var arbol: puntero_arbol; var estado: t_estado);
@@ -472,6 +525,7 @@ procedure evaluar_definiciones(var arbol: puntero_arbol; var estado: t_estado);
         if arbol^.hijos.cant > 0 then
             evaluar_lista_definiciones(arbol^.hijos.elem[2], estado);
     end;
+
 
 // <ListaDefiniciones> ::= <Definicion> ";" <MasDefiniciones>
 procedure evaluar_lista_definiciones(var arbol: puntero_arbol; var estado: t_estado);
@@ -493,31 +547,32 @@ procedure evaluar_definicion(var arbol: puntero_arbol; var estado: t_estado);
         evaluar_tipo(arbol^.hijos.elem[3], estado,arbol^.hijos.elem[1]^.lexema);
     end;
 
-// <Tipo> ::=  "matriz" "[" <OP> "]" "[" <OP> "]" | "real"  
-procedure evaluar_tipo(var arbol: puntero_arbol; var estado: t_estado;var id:string);
+// <Tipo> ::=  "matriz" "[" “creal” "]" "["  “creal“ "]" | "real"  
+procedure evaluar_tipo(var arbol: puntero_arbol; var estado: t_estado; id_lexema: string);
     var
-        aux_fila,aux_columna:real;
-        fila,columna:integer;
-        matriz:t_tipo_matriz;
-        tipo:t_tipo;
-        lexema:string;
+        tipo: t_tipo;
+        fila,columna: integer;
+        fila_aux,columna_aux:real;
     begin
-        if arbol^.hijos.elem[1]^.simbolo = Treal then
-            begin
-                tipo:= Treal_estado;
-                agregar_real(estado, id, tipo)
-            end
-        else
-            if arbol^.hijos.elem[1]^.simbolo = Tmatriz then
+        case arbol^.hijos.elem[1]^.simbolo of
+            Treal:
                 begin
-                    evaluar_op(arbol^.hijos.elem[3], estado,aux_fila,matriz,tipo,lexema);
-                    evaluar_op(arbol^.hijos.elem[6], estado,aux_columna,matriz,tipo,lexema);
-                    fila := trunc(aux_fila);
-                    columna := trunc(aux_columna);
-                    tipo:= Tmatriz_estado;
-                    agregar_matriz(estado, id,tipo,fila,columna);
+                    tipo := Treal_estado;
+                    agregar_real(estado, id_lexema, tipo);
                 end;
+            Tmatriz:
+                begin
+                    fila_aux := pasar_a_real(arbol^.hijos.elem[3]^.lexema);
+                    columna_aux := pasar_a_real(arbol^.hijos.elem[6]^.lexema);
+                    fila := trunc(fila_aux);
+                    columna := trunc(columna_aux);
+                    tipo := Tmatriz_estado;
+                    agregar_matriz(estado, id_lexema, tipo, fila, columna);
+                end;
+        end;
+
     end;
+
 
 // <Cuerpo> ::= <Sentencias> “;” <Cuerpo> | eps
 procedure evaluar_cuerpo(var arbol: puntero_arbol; var estado: t_estado);
@@ -529,7 +584,7 @@ procedure evaluar_cuerpo(var arbol: puntero_arbol; var estado: t_estado);
             end;
     end;
 
-//<Sentencias> ::= <Asignacion> | <Leer>| <Escribir> | <Condicinal> | <Ciclo>
+// <Sentencias> ::= <Asignacion> | <Leer>| <Escribir> | <Condicinal> | <Ciclo>
 procedure evaluar_sentencias(var arbol: puntero_arbol; var estado: t_estado);
     begin
         case arbol^.hijos.elem[1]^.simbolo of
@@ -541,6 +596,7 @@ procedure evaluar_sentencias(var arbol: puntero_arbol; var estado: t_estado);
         end;
     end;
 
+
 // <Asignacion> ::= "id" <Asingacion’> 
 procedure evaluar_asignacion(var arbol: puntero_arbol; var estado: t_estado);
     var
@@ -551,415 +607,376 @@ procedure evaluar_asignacion(var arbol: puntero_arbol; var estado: t_estado);
     end;
 
 
-
-
-
-
-
-//<Asigancion’> ::=  ":=" <OP> |  “[“ <OP> ”]” ”[“ <OP> “]” “:=” <OP>
-// ASIGNAR MATRIZ TENGO QUE VERIFICAR QUE LA MATRIZ QUE ESTA EN ESTADO SEA DE LAS MISMAS DIMENSIONES QUE 
-// LA QUE ESTOY ASIGNANDO, 
-// VERIFICAR EN OP4 SI ES UNA MATRIZ O UN REAL, SI HAGO FILAS(A) ENTONCES DEBERIA TAMBIEN SER REAL, 
-// LA TRANSPUESTA DEUVLEVE UNA MATRIZ
-procedure evaluar_asignacion_prima(var arbol: puntero_arbol; var estado: t_estado;var lexema:string);
+// <Asigancion’> ::=  ":=" <Asignacion’’> |  “[“ <OP>”]””[“<OP> “]” “:=” <OP> 
+procedure evaluar_asignacion_prima(var arbol: puntero_arbol; var estado: t_estado; lexema: string);
     var
-        valor,valor_fila,valor_columna:real;
-        matriz:t_tipo_matriz;
-        tipo:t_tipo;
-        lexema_der,lexema_columna,lexema_fila:string;
-        fila,columna,fila_op,columna_op,fila_der,columna_der,fila_cmatriz,columna_cmatriz:integer;
+        tipo_1,tipo_2: t_tipo;
+        matriz: t_tipo_matriz;
+        fila,columna: integer;
+        fila_op,columna_op,valor:real;
     begin
+        obtener_tipo(estado, lexema, tipo_1);
         case arbol^.hijos.elem[1]^.simbolo of
-            Tasig: 
+            Tasig:
                 begin
-                    obtener_tipo(estado,lexema,tipo);
-                    if tipo = Tmatriz_estado then
+
+                    evaluar_asignacion_prima_prima(arbol^.hijos.elem[2], estado, valor, matriz, tipo_2);
+               
+                    if tipos_iguales(tipo_1, tipo_2) then
                         begin
-           
-                            obtener_matriz(estado,lexema,matriz);
-                        
-                            evaluar_op(arbol^.hijos.elem[2], estado,valor,matriz,tipo,lexema_der);
-             
-                            obtener_dimensiones(estado,lexema, fila,columna);
-
-                            obtener_dimensiones_cmatriz(matriz,fila_cmatriz,columna_cmatriz);
-
-                            if (fila = fila_cmatriz) and (columna = columna_cmatriz) then
-                                begin
-                                    asignar_matriz(estado,lexema,matriz);
-                                end
+                            if tipo_1 = Treal_estado then
+                                asignar_real(estado, lexema, valor)
                             else
-                                writeln('Error: No se pueden asignar matrices de distinta dimension');
+                                asignar_matriz(estado, lexema, matriz);
                         end
-                    else    
-                        if tipo = Treal_estado then
-                            begin  
-                                evaluar_op(arbol^.hijos.elem[2], estado,valor,matriz,tipo,lexema_der);
-                                asignar_real(estado,lexema,valor);    
-                            end;
-                end;
-            Tcorchetea: 
-                begin
-                    obtener_dimensiones(estado,lexema, fila,columna);
-
-                    evaluar_op(arbol^.hijos.elem[2], estado,valor_fila,matriz,tipo,lexema_fila);
-                    evaluar_op(arbol^.hijos.elem[5], estado,valor_columna,matriz,tipo,lexema_columna);
-                    evaluar_op(arbol^.hijos.elem[8], estado,valor,matriz,tipo,lexema_der);          
-
-                    fila_op:= trunc(valor_fila);
-                    columna_op:= trunc(valor_columna);
-                    if  tipo = Tmatriz_estado then
-                        writeln('Error no puedo asingar una matriz a un elemento de una matriz A[i,j] = Matriz')
                     else
                         begin
-                            if fila_op > fila then
-                                writeln('Error: La matriz declarada tiene menores filas que la que estoy intendo acceder')
-                            else
-                                if columna_op > columna then
-                                    writeln('Error: La matriz declarada tiene menores columnas que la que estoy intendo acceder')
-                                else
-                                    begin
-                                        asignar_valor_matriz(estado,lexema,valor,fila_op,columna_op);
-                                    end;
-                    end;
+                            writeln('Error de tipos en la asignacion de ', lexema);
+                            halt();
+                        end;
 
                 end;
+            Tcorchetea:
+                begin
+                    obtener_dimensiones(estado, lexema, fila, columna);
+                    evaluar_op(arbol^.hijos.elem[2], estado, fila_op, matriz,tipo_2);
+                    evaluar_op(arbol^.hijos.elem[5], estado, columna_op, matriz,tipo_2);
+                    evaluar_op(arbol^.hijos.elem[8], estado, valor, matriz,tipo_2);
+                  
+                    if (fila_op > 0) and (columna_op > 0) and (fila_op <= fila) and (columna_op <= columna) then
+                        begin
+                            columna := trunc(columna_op);
+                            fila := trunc(fila_op);
+                            if (tipo_1 = Tmatriz_estado) and (tipo_2 = Treal_estado) then
+                                asignar_valor_matriz(estado, valor, lexema, fila, columna)
+                            else
+                                begin
+                                    writeln('Error de tipos en la asignacion de ', lexema);
+                                    halt();
+                                end;
+                        end
+                    else
+                        begin
+                            writeln('Error de indices en la asignacion de ', lexema);
+                            halt();
+                        end;
+                end;
         end;
+
+
+    end;
+
+
+
+// <Asignacin’’> :=  <OP> | <CMatriz>   OP PUEDE SER MATRIZ O REAL Y CMATRIZ SIEMPRE MATRIZ
+procedure evaluar_asignacion_prima_prima(var arbol: puntero_arbol; var estado: t_estado;var valor: real; var matriz: t_tipo_matriz; var tipo_2: t_tipo);
+    begin
+        case arbol^.hijos.elem[1]^.simbolo of
+            Vop: evaluar_op(arbol^.hijos.elem[1], estado, valor, matriz,tipo_2);
+
+            Vcmatriz:
+                begin
+                    tipo_2 := Tmatriz_estado;
+                    inicializar_matriz_NaN(matriz);
+                    evaluar_cmatriz(arbol^.hijos.elem[1], estado, matriz);
+                end;
+        end;
+
+
     end;
 
 // <OP> ::= <OP2> <OP'>
-procedure evaluar_op(var arbol: puntero_arbol; var estado: t_estado; var valor:real; var matriz:t_tipo_matriz;var tipo:t_tipo;var lexema:string);
+procedure evaluar_op(var arbol: puntero_arbol; var estado: t_estado; var valor:real; var matriz:t_tipo_matriz; var tipo:t_tipo);
     begin
-        evaluar_op_2(arbol^.hijos.elem[1], estado,valor,matriz,tipo,lexema);
-        evaluar_op_prima(arbol^.hijos.elem[2], estado,valor,matriz,tipo,lexema);
+        evaluar_op_2(arbol^.hijos.elem[1], estado,valor,matriz,tipo);
+        evaluar_op_prima(arbol^.hijos.elem[2], estado,valor,matriz,tipo);
     end;
 
-// <OP'> ::= "+" <OP2> <OP'> | "-" <OP2> <OP'> | eps
-// OPERACIONES PERMITIDAS REAL + REAL, MATRIZ + MATRIZ, REAL - REAL, MATRIZ - MATRIZ
-procedure evaluar_op_prima(var arbol: puntero_arbol; var estado: t_estado; var valor: real; var matriz:t_tipo_matriz;var tipo:t_tipo;var lexema:string);
+// <OP'> ::= "+" <OP2> <OP'> | "-" <OP2> <OP'> | eps 
+// MATRIZ + MATRIZ || MATRIZ - MATRIZ || REAL + REAL || REAL - REAL
+procedure evaluar_op_prima(var arbol: puntero_arbol; var estado: t_estado; var valor:real; var matriz:t_tipo_matriz;var tipo:t_tipo);
     var
-        valor_1: real;
-        matriz_1,matriz_resultado,matriz_der: t_tipo_matriz;
-        tipo_1,tipo_der: t_tipo;
-        lexema_1,lexema_der: string;
-        fila,columna,fila_der,columna_der:integer;
-
+        valor_2: real;
+        matriz_2: t_tipo_matriz;
+        tipo_2: t_tipo;
     begin
         if arbol^.hijos.cant > 0 then
             begin
-                case arbol^.hijos.elem[1]^.simbolo of
-                    Tmas: begin
-                             evaluar_op_2(arbol^.hijos.elem[2], estado,valor_1,matriz_1,tipo_1,lexema_1);
-                             case tipo of 
-                                Treal_estado: begin
-                                                if tipo_1 = Treal_estado then
-                                                    begin
-                                                        valor := valor + valor_1
-                                                    end
-                                                else
-                                                    writeln('Error: No se puede sumar un real con una matriz');
-                                              end;
-                                Tmatriz_estado: if tipo_1 = Tmatriz_estado then
-                                                    begin
-                                                        obtener_matriz(estado,lexema,matriz);
-                                                        obtener_matriz(estado,lexema_1,matriz_1);
-
-                                                        obtener_dimensiones(estado,lexema, fila,columna);
-                                                        obtener_dimensiones(estado,lexema_1, fila_der,columna_der);
-
-                                                        if (fila = fila_der) and (columna = columna_der) then
-                                                            begin
-                                                                suma_matrices(matriz,matriz_1,matriz_resultado,fila,columna);
-                                                                matriz:=matriz_resultado;
-                                                            end
-                                                        else
-                                                            writeln('Error: No se pueden sumar matrices de distinta dimension');
-                                                    end
-                                                else
-                                                    writeln('Error: No se puede sumar una matriz con un real');
-                             end;
-                          end;
-
-                    Tmenos: begin
-                                evaluar_op_2(arbol^.hijos.elem[2], estado,valor_1,matriz_1,tipo_1,lexema_1);
-                                case tipo of
-                                    Treal_estado: if tipo_1 = Treal_estado then
-                                                    begin                
-                                                        valor := valor - valor_1;
-                                                    end
-                                            else
-                                                writeln('Error: No se puede restar un real con una matriz');
-                                    Tmatriz_estado: if tipo_1 = Tmatriz_estado then
-                                                        begin
-                                                            obtener_matriz(estado,lexema,matriz);
-                                                            obtener_matriz(estado,lexema_1,matriz_1);
-                                                            
-                                                            obtener_dimensiones(estado,lexema, fila,columna);
-                                                            obtener_dimensiones(estado,lexema_1, fila_der,columna_der);
-                                                            if (fila = fila_der) and (columna = columna_der) then
-                                                                begin
-                                                                    resta_matrices(matriz,matriz_1,matriz_resultado,fila,columna);
-                                                                    matriz:=matriz_resultado;
-                                                                end
-                                                            else
-                                                                writeln('Error: No se pueden restar matrices de distinta dimension');
-                                                        end
-                                                    else
-                                                        writeln('Error: No se puede restar una matriz con un real');
-                                end;
-                            end;
-                    end;
-                if arbol^.hijos.cant > 2 then
+                evaluar_op_2(arbol^.hijos.elem[2], estado, valor_2, matriz_2, tipo_2);
+                if tipos_iguales(tipo, tipo_2) then
                     begin
-                        evaluar_op_prima(arbol^.hijos.elem[3], estado,valor,matriz,tipo,lexema);
+                        case arbol^.hijos.elem[1]^.simbolo of
+                            Tmas:
+                                begin
+                                    if tipo = Treal_estado then
+                                        valor := valor + valor_2
+                                    else 
+                                        suma_matriz(matriz, matriz_2);
+                                end;
+                            Tmenos:
+                                begin
+                                    if tipo = Treal_estado then
+                                        valor := valor - valor_2
+                                    else 
+                                        resta_matriz(matriz, matriz_2);
+                                end;
+                        end;
+                    end
+                else 
+                    begin
+                        writeln('Error de tipos en la suma o resta');
+                        halt();
                     end;
+
+                evaluar_op_prima(arbol^.hijos.elem[3], estado, valor, matriz, tipo);
+
             end;
     end;
+
 
 // <OP2> ::= <OP3> <OP2'>
-procedure evaluar_op_2(var arbol: puntero_arbol; var estado: t_estado; var valor:real; var matriz:t_tipo_matriz; var tipo:t_tipo; var lexema:string);
+procedure evaluar_op_2(var arbol: puntero_arbol; var estado: t_estado; var valor:real; var matriz:t_tipo_matriz; var tipo:t_tipo);
     begin       
-        evaluar_op_3(arbol^.hijos.elem[1], estado,valor,matriz,tipo,lexema);
-        evaluar_op_2_prima(arbol^.hijos.elem[2], estado,valor,matriz,tipo,lexema);
+        evaluar_op_3(arbol^.hijos.elem[1], estado,valor,matriz,tipo);
+        evaluar_op_2_prima(arbol^.hijos.elem[2], estado,valor,matriz,tipo);
     end;
 
-// <OP2'> ::= "*" <OP3> <OP2'> | "/" <OP3> <OP2'> | eps  
-// OP PERMITIDAS REAL * REAL, MATRIZ * REAL, REAL * MATRIZ, MATRIZ * MATRIZ, REAL / REAL, MATRIZ / REAL
-procedure evaluar_op_2_prima(var arbol: puntero_arbol; var estado: t_estado; var valor:real; var matriz:t_tipo_matriz; var tipo:t_tipo; var lexema:string);
+// <OP2'> ::= "*" <OP3> <OP2'> | "/" <OP3> <OP2'> | eps
+// MATRIZ * MATRIZ  || REAL * REAL || REAL / REAL || MATRIZ * REAL || REAL * MATRIZ
+procedure evaluar_op_2_prima(var arbol: puntero_arbol; var estado: t_estado; var valor:real; var matriz:t_tipo_matriz; var tipo:t_tipo);
     var
-        valor_der:real;
-        matriz_der,matriz_resultado:t_tipo_matriz;
-        tipo_der:t_tipo;
-        lexema_der:string;
-        fila_der,columna_der,fila_izq,columna_izq:integer;
+        valor_2: real;
+        matriz_2,resultado: t_tipo_matriz;
+        tipo_2: t_tipo;
     begin
         if arbol^.hijos.cant > 0 then
             begin
+                evaluar_op_3(arbol^.hijos.elem[2], estado, valor_2, matriz_2, tipo_2);
                 case arbol^.hijos.elem[1]^.simbolo of
-                    Tmulti: begin
-                                evaluar_op_3(arbol^.hijos.elem[2], estado,valor_der,matriz_der,tipo_der,lexema_der);
-                                case tipo of
-                                    Treal_estado: if tipo_der = Treal_estado then
-                                                valor := valor * valor_der
-                                            else
-                                                begin
-                                                    obtener_dimensiones(estado,lexema_der, fila_izq,columna_izq);
-                                                    matriz_escalar(matriz_der,valor,fila_izq,columna_izq);
-                                                    matriz := matriz_der;
-                                                end;
-                                    Tmatriz_estado: if tipo_der = Treal_estado then
-                                                begin 
-                                                    obtener_dimensiones(estado,lexema, fila_der,columna_der);
-                                                    matriz_escalar(matriz,valor_der,fila_der,columna_der);
-                                                end
-                                            else
-                                                begin
-                                                    obtener_dimensiones(estado,lexema, fila_izq,columna_izq);
-                                                    obtener_dimensiones(estado,lexema_der, fila_der,columna_der);
-
-                                                    multiplicar_matrices(matriz,matriz_der,matriz_resultado,fila_izq,columna_izq,fila_der,columna_der);
-
-                                                    obtener_dimensiones_cmatriz(matriz_resultado, fila_izq,columna_izq);
-
-                                                    matriz := matriz_resultado;
-                                                end;
+                    Tmulti:
+                        begin
+                            if tipo = Treal_estado then
+                                begin
+                                    if tipo_2 = Treal_estado then
+                                        valor := valor * valor_2
+                                    else 
+                                        matriz_escalar(matriz, valor_2);
+                                end
+                            else 
+                                begin
+                                    if tipo_2 = Treal_estado then
+                                        matriz_escalar(matriz, valor_2)
+                                    else 
+                                        begin
+                                            multiplicar_matrices(matriz, matriz_2,resultado);
+                                            matriz := resultado;
+                                        end;
                                 end;
-
-                            end;
-                    Tdivi: begin
-                            evaluar_op_3(arbol^.hijos.elem[2], estado,valor_der,matriz_der,tipo_der,lexema_der);
-                            case tipo of
-                                Treal_estado: if tipo_der = Treal_estado then
-                                            valor := valor / valor_der
-                                        else
-                                            writeln('Error: No se puede dividir un real por una matriz');
-                                Tmatriz_estado: if tipo_der = Treal_estado then
-                                            begin
-                                                obtener_dimensiones(estado,lexema, fila_der,columna_der);
-                                                matriz_escalar(matriz,1/valor_der,fila_der,columna_der)
-                                            end
-                                        else
-                                            writeln('Error: No se puede dividir una matriz por otra matriz');
-                            end;
                         end;
-
+                    Tdivi:
+                        begin
+                            if tipos_iguales(tipo, tipo_2) then
+                                begin
+                                    if tipo = Treal_estado then
+                                        valor := valor / valor_2
+                                    else 
+                                        begin
+                                            writeln('Error, no se puede dividir matrices');
+                                            halt();
+                                        end;
+                                end
+                            else 
+                                begin
+                                    writeln('Error de tipos en la division');
+                                    halt();
+                                end;
+                        end;
                 end;
-                if arbol^.hijos.cant > 2 then
-                    begin
-                        evaluar_op_2_prima(arbol^.hijos.elem[3], estado,valor,matriz,tipo,lexema);
-                    end;
-                
+
+                evaluar_op_2_prima(arbol^.hijos.elem[3], estado, valor, matriz, tipo);
             end;
+
     end;
 
-// <OP3> ::= <OP4> <OP3'>;
-procedure evaluar_op_3(var arbol: puntero_arbol; var estado: t_estado; var valor:real; var matriz:t_tipo_matriz; var tipo:t_tipo; var lexema:string);
+
+// <OP3> ::= <OP4> <OP3'>
+procedure evaluar_op_3(var arbol: puntero_arbol; var estado: t_estado; var valor:real; var matriz:t_tipo_matriz; var tipo:t_tipo);
     begin
-        evaluar_op_4(arbol^.hijos.elem[1], estado,valor,matriz,tipo,lexema);
-        evaluar_op_3_prima(arbol^.hijos.elem[2], estado,valor,matriz,tipo,lexema);
+        evaluar_op_4(arbol^.hijos.elem[1], estado,valor,matriz,tipo);
+        evaluar_op_3_prima(arbol^.hijos.elem[2], estado,valor,matriz,tipo);
     end;
 
-// <OP3'> ::= “^” <OP4> <OP3'> | eps   OPERACIONES PERMITIDAS REAL ^REAL , MATRIZ ^ REAL, 
-procedure evaluar_op_3_prima(var arbol: puntero_arbol; var estado: t_estado; var valor:real; var matriz:t_tipo_matriz;var tipo_izq:t_tipo;var lexema_izq:string);
+// <OP3'> ::= “^” <OP4> <OP3'> | eps
+// REAL ^ REAL || MATRIZ ^ REAL 
+procedure evaluar_op_3_prima(var arbol: puntero_arbol; var estado: t_estado; var valor:real; var matriz:t_tipo_matriz; var tipo:t_tipo);
     var
-        valor_der:real;
-        tipo_der:t_tipo;
-        lexema_der:string;
-        matriz_der:t_tipo_matriz;
+        valor_2: real;
+        matriz_2: t_tipo_matriz;
+        tipo_2: t_tipo;
     begin
         if arbol^.hijos.cant > 0 then
             begin
-                case tipo_izq of
-                    Treal_estado: begin
-                                    evaluar_op_4(arbol^.hijos.elem[2], estado,valor_der,matriz_der,tipo_der,lexema_der);
-                                    if tipo_der = Treal_estado then
-                                        valor := power(valor,valor_der)
-                                    else
-                                        writeln('Error: No se puede elevar un real a una amtriz');
-                                    end;
-                    Tmatriz_estado: begin
-                                        evaluar_op_4(arbol^.hijos.elem[2], estado,valor_der,matriz_der,tipo_der,lexema_der);
-                                        if tipo_der = Treal_estado then
-                                            begin             
-                                                potencia_matriz(estado,matriz,valor_der,lexema_izq);
-                                            end
-                                        else
-                                            writeln('Error: No se puede elevar una matriz a otra matriz');
-                                    end;
+                evaluar_op_4(arbol^.hijos.elem[2], estado, valor_2, matriz_2, tipo_2);
+                
+                case tipo of
+                    Treal_estado:
+                        begin
+                            if tipo_2 = Treal_estado then
+                                valor := power(valor, valor_2)
+                            else 
+                                begin
+                                    writeln('Error de tipos en la potencia, REAL ^ MATRIZ');
+                                    halt();
+                                end;
+                        end;
+                    Tmatriz_estado:
+                        begin
+                            if tipo_2 = Treal_estado then
+                                potencia_matriz(matriz, valor_2)
+                            else 
+                                begin
+                                    writeln('Error de tipos en la potencia , MATRIZ ^ MATRIZ');
+                                    halt();
+                                end;
+                        end;
                 end;
-            if arbol^.hijos.cant > 2 then
-                begin
-                    evaluar_op_3_prima(arbol^.hijos.elem[3], estado,valor,matriz,tipo_izq,lexema_izq);
-                end;
+                evaluar_op_3_prima(arbol^.hijos.elem[3], estado, valor, matriz, tipo);
             end;
     end;
-    
-// <OP4> ::= <CMatriz> | “id” <OP4'> | “creal” | “filas” “(“ “id” “)” | “columnas” “(“ “id” “)” 
-//                     | "trans" "(" "id" ")" | “-” <OP4> | “(“ <OP> “)” 
-procedure evaluar_op_4(var arbol: puntero_arbol; var estado: t_estado; var valor:real;var matriz:t_tipo_matriz;var tipo:t_tipo;var lexema:string);
+
+
+// <OP4> ::= “id” <OP4’> | “creal” | “filas” “(“ “id” “)” | “columnas” “(“ “id” “)” |
+//                   “tras” “(“ “id” “)”  | “-” <OP4> | “(“ <OP> “)” 
+procedure evaluar_op_4(var arbol: puntero_arbol; var estado: t_estado; var valor:real; var matriz:t_tipo_matriz; var tipo:t_tipo);
     var
-        fila,columna,fila_acc,columna_acc:integer;
-        matriz_transpuesta:t_tipo_matriz;
-        lexema_der:string;
+        lexema:string;
+        fila,columna: integer;
     begin
         case arbol^.hijos.elem[1]^.simbolo of
-            Tid: begin
-                    lexema:=arbol^.hijos.elem[1]^.lexema;
+            Tid:
+                begin
+                    lexema := arbol^.hijos.elem[1]^.lexema;
                     obtener_tipo(estado, lexema, tipo);
-                    case tipo of
-                        Treal_estado: begin
-                             valor := valor_de_real(estado, lexema);
-                            end;
-                        Tmatriz_estado:begin
+ 
+                    if not variable_inicializada(estado, lexema) then
+                        begin
+                            writeln('Error: La variable ', lexema, ' no ha sido inicializada');
+                            halt();
+                        end;
+                    if tipo = Treal_estado then
+                        obtener_real(estado, lexema, valor)
+                    else 
+                        obtener_matriz(estado, lexema, matriz);
 
-                                        obtener_matriz(estado, lexema, matriz);
-                                        
-                                        evaluar_op_4_prima(arbol^.hijos.elem[2], estado,valor,matriz,tipo,lexema,fila_acc,columna_acc);
-
-                                       end;
-                    end;
-                 end;
-            Tcreal: begin
-                        lexema:=arbol^.hijos.elem[1]^.lexema;
-                        valor := pasar_a_real(lexema);
-                        tipo := Treal_estado;
-                    end;
-            Tfilas: 
-                begin
-                    obtener_tipo(estado, arbol^.hijos.elem[3]^.lexema, tipo);
-                    if tipo = Treal_estado then
-                        writeln('Error: No se puede obtener las filas de un real')
-                    else
-                        begin
-                            obtener_dimensiones(estado, arbol^.hijos.elem[3]^.lexema, fila,columna);
-                            valor := fila;
-                            tipo:=Treal_estado;
-                        end;
-                end;
-            Tcolumnas: 
-                begin
-                    obtener_tipo(estado, arbol^.hijos.elem[3]^.lexema, tipo);
-                    if tipo = Treal_estado then
-                        writeln('Error: No se puede obtener las filas de un real')
-                    else
-                        begin
-                            obtener_dimensiones(estado, arbol^.hijos.elem[3]^.lexema, fila,columna);
-                            valor := columna;
-                            tipo:=Treal_estado;
-                        end;
-                end;
-            Tmenos: begin
-                        evaluar_op_4(arbol^.hijos.elem[2], estado,valor,matriz,tipo,lexema);
-                        if tipo = Treal_estado then
-                            valor := -valor
-                        else
-                            writeln('Error: No se puede negar una matriz');
-                    end;
-            Ttras: 
-                begin
-                    obtener_tipo(estado, arbol^.hijos.elem[3]^.lexema, tipo);
-                    if tipo = Treal_estado then
-                        writeln('Error: No se puede transponer un real')
-                    else
-                        begin
-                            obtener_matriz(estado, arbol^.hijos.elem[3]^.lexema, matriz);
-                            obtener_dimensiones(estado, arbol^.hijos.elem[3]^.lexema, fila,columna);
-                            transponer_matriz(matriz, matriz_transpuesta, fila,columna);
-                        
-                            matriz := matriz_transpuesta;
-                        end;
-                end;
-            Tparentesisa:begin
+       
+                    evaluar_op_4_prima(arbol^.hijos.elem[2], estado, valor, matriz, tipo);
+     
                     
-                    evaluar_op(arbol^.hijos.elem[2], estado,valor,matriz,tipo,lexema);
-                    end;
-            Vcmatriz: 
-                begin
-                    tipo := Tmatriz_estado;
-                    fila:=1;
-                    columna:=1;
-                    evaluar_cmatriz(arbol^.hijos.elem[1], estado,matriz,fila,columna);
                 end;
+            Tcreal:
+                begin
+                    valor := pasar_a_real(arbol^.hijos.elem[1]^.lexema);
+                    tipo := Treal_estado;
+                end;
+            Tfilas:
+                begin
+                    lexema := arbol^.hijos.elem[3]^.lexema;
+                    obtener_dimensiones(estado, lexema, fila, columna);
+                    valor := fila;
+                    tipo := Treal_estado;
+                end;
+            Tcolumnas:
+                begin
+                    lexema := arbol^.hijos.elem[3]^.lexema;
+                    obtener_dimensiones(estado, lexema, fila, columna);
+                    valor := columna;
+                    tipo := Treal_estado;
+                end;
+            Ttras:
+                begin
+                    lexema := arbol^.hijos.elem[3]^.lexema;
+               
+                    if not variable_inicializada(estado, lexema) then
+                        begin
+                            writeln('Error: La variable ', lexema, ' no ha sido inicializada');
+                            halt();
+                        end;
+                    obtener_tipo(estado, lexema, tipo);
+                    if tipo <> Tmatriz_estado then
+                        begin
+                            writeln('Error: No se puede transponer una variable que no es matriz');
+                            halt();
+                        end;
+                    obtener_matriz(estado, lexema, matriz);
+                    trasponer_matriz(matriz);
+                    tipo := Tmatriz_estado;
+                end;
+            Tmenos:
+                begin
+                    evaluar_op_4(arbol^.hijos.elem[2], estado, valor, matriz, tipo);
+                    if tipo = Treal_estado then
+                        valor := -valor
+                    else 
+                        matriz_escalar(matriz, -1);
+                end;
+            Tparentesisa: evaluar_op(arbol^.hijos.elem[2], estado, valor, matriz, tipo);
+    
+
         end;
+
     end;
 
-// <OP4'> ::= "[" <OP> "]" "[" <OP> "]" | eps
-procedure evaluar_op_4_prima(var arbol: puntero_arbol; var estado: t_estado; var valor:real;var matriz:t_tipo_matriz;var tipo:t_tipo;var lexema:string ;var fila,columna:integer);
+
+
+
+// <OP4’> ::= “[“ <OP> “]” “[“ <OP> “]” | eps
+procedure evaluar_op_4_prima(var arbol: puntero_arbol; var estado: t_estado; var valor:real; var matriz:t_tipo_matriz; var tipo:t_tipo);
     var
-        fila_op,columna_op,fila_aux,columna_aux:integer;
-        lexema_aux:string;
+        fila_aux,columna_aux: real;
+        fila,columna: integer;
+        matriz_2: t_tipo_matriz;
+        tipo_2: t_tipo;
     begin
         if arbol^.hijos.cant > 0 then
-            begin   
-                evaluar_op(arbol^.hijos.elem[2], estado,valor,matriz,tipo,lexema_aux);
-                fila_op := trunc(valor);
-                evaluar_op(arbol^.hijos.elem[5], estado,valor,matriz,tipo,lexema_aux);
-                columna_op := trunc(valor);
-
-                obtener_dimensiones(estado, lexema, fila_aux,columna_aux);
-
-                if (fila_op > fila_aux) or (columna_op > columna_aux) then
-                    writeln('Error: La matriz declarada tiene menores filas que la que estoy intendo acceder')
-                else
-                    valor := matriz[fila_op,columna_op];   
+            begin
+                evaluar_op(arbol^.hijos.elem[2], estado, fila_aux, matriz_2, tipo_2);
+                evaluar_op(arbol^.hijos.elem[5], estado, columna_aux, matriz_2, tipo_2);
+        
+                fila := trunc(fila_aux);
+                columna := trunc(columna_aux);
+  
+                if (tipo = Tmatriz_estado) and (fila > 0) and (columna > 0) then
+                    begin
+                 
+                        tipo := Treal_estado;
+                        valor := matriz[fila, columna];
+                    end
+                else 
+                    begin
+                        writeln('Error de indices en la matriz');
+                        halt();
+                    end;
             end;
     end;
 
 // <CMatriz> ::= "[" <Filas> "]”
-procedure evaluar_cmatriz(var arbol: puntero_arbol; var estado: t_estado; var matriz:t_tipo_matriz;var fila,columna:integer);
+procedure evaluar_cmatriz(var arbol: puntero_arbol; var estado: t_estado; var matriz:t_tipo_matriz);
+    var
+        fila_aux,columna_aux: integer;
     begin
-        evaluar_filas(arbol^.hijos.elem[2], estado,matriz,fila,columna);
+        fila_aux := 1;
+        columna_aux := 1;
+        evaluar_filas(arbol^.hijos.elem[2], estado,matriz,fila_aux,columna_aux);
     end;
 
 // <Filas> ::= <Fila> <FilasExtra>
 procedure evaluar_filas(var arbol: puntero_arbol; var estado: t_estado; var matriz:t_tipo_matriz;var fila,columna:integer);
     var
-        columnas_aux,filas_aux:integer;
+        columnas_aux:integer;
     begin
 
         columnas_aux:=0;
         evaluar_fila(arbol^.hijos.elem[1], estado,matriz,fila,columna);
-
         if columnas_aux > 0 then
             begin
                 if columna <> columnas_aux then
@@ -995,10 +1012,9 @@ procedure evaluar_fila(var arbol: puntero_arbol; var estado: t_estado; var matri
 procedure evaluar_numeros(var arbol: puntero_arbol; var estado: t_estado; var matriz:t_tipo_matriz;var fila,columna:integer);
     var
         tipo:t_tipo;
-        lexema:string;
         valor:real;
     begin
-        evaluar_op_4(arbol^.hijos.elem[1], estado,valor,matriz,tipo,lexema);
+        evaluar_op_4(arbol^.hijos.elem[1], estado,valor,matriz,tipo);
         if tipo = Treal_estado then
             begin
                 matriz[fila,columna] := valor;
@@ -1022,47 +1038,46 @@ procedure evaluar_numeros_prima(var arbol: puntero_arbol; var estado: t_estado; 
 // <Leer> ::= “leer” “(“ “cadena” “,” “id” “)”
 procedure evaluar_leer(var arbol: puntero_arbol; var estado: t_estado);
     var
-        valor_leido:string;
-        valor:real;
+        lexema,cadena,valor_leido:string;
+        tipo:t_tipo;
         matriz:t_tipo_matriz;
-        lexema,cadena: string;
-        tipo: t_tipo;
-        filas, columnas, filas_cmatriz, columnas_cmatriz: integer;
-
+        valor:real;
+        fila,columna,fila_op,columna_op:integer;
     begin
+        cadena := Copy(arbol^.hijos.elem[3]^.lexema, 2, Length(arbol^.hijos.elem[3]^.lexema) - 2);
         lexema := arbol^.hijos.elem[5]^.lexema;
-        cadena := Copy(arbol^.hijos.elem[3]^.lexema,2,Length(arbol^.hijos.elem[3]^.lexema)-2);
         obtener_tipo(estado, lexema, tipo);
+
         if Trim(cadena) <> '' then
-            writeln(arbol^.hijos.elem[3]^.lexema, ': ');
+            writeln(cadena,': ');
         readln(valor_leido);
 
-        case tipo of
-            Treal_estado: 
-                begin
-                    valor := pasar_a_real(valor_leido);
-                    asignar_real(estado, lexema, valor);
-                end;
-            Tmatriz_estado: 
-                begin
-                    if pasar_a_matriz(valor_leido, matriz, filas, columnas) then
-                        begin
-                            obtener_dimensiones(estado, lexema, filas, columnas);
-                            obtener_dimensiones_cmatriz(matriz, filas_cmatriz, columnas_cmatriz);
-                            if (filas <> filas_cmatriz) or (columnas <> columnas_cmatriz) then
-                                writeln('Error: La matriz ingresada no tiene las dimensiones correctas')
-                            else
-                                begin
-                                    agregar_matriz(estado, lexema, tipo, filas, columnas);
-                                    asignar_matriz(estado, lexema, matriz)
-                                end;
-                          
-                        end
-                    else
-                        writeln('Error: La matriz ingresada no es válida');
-                    
-                end;
-        end;
+
+        if tipo = Treal_estado then
+            begin
+                valor := pasar_a_real(valor_leido);
+                asignar_real(estado, lexema, valor);
+            end
+        else 
+            begin
+                if pasar_a_matriz(valor_leido, matriz) then
+                    begin
+                        obtener_dimensiones(estado, lexema, fila, columna);
+                        obtener_dimensiones_cmatriz(matriz, fila_op, columna_op);
+                        if (fila_op > 0) and (columna_op > 0) and (fila_op <= fila) and (columna_op <= columna) then
+                            asignar_matriz(estado, lexema, matriz)
+                        else 
+                            begin
+                                writeln('Error de indices en la asignacion de ', lexema);
+                                halt();
+                            end;
+                    end
+                else 
+                    begin
+                        writeln('Error: No se puede asignar un valor no numerico a una matriz');
+                        halt();
+                    end;
+            end;
     end;
 
 // <Escribir> ::= “escribir” “(“ <Lista> “)”
@@ -1083,44 +1098,46 @@ procedure evaluar_lista(var arbol: puntero_arbol; var estado: t_estado);
 procedure evaluar_lista_prima(var arbol: puntero_arbol; var estado: t_estado);
     begin
         if arbol^.hijos.cant > 0 then
-            begin
-             evaluar_lista(arbol^.hijos.elem[2], estado);
-            end;
+            evaluar_lista(arbol^.hijos.elem[2], estado);
     end;
+// TODO AL MOSTRAR UNA MATRIZ MOSTRAR CON CORCHETES Y SIN ESPACIOS ENTRE LOS VALORES
+// TODO TAMBIEN SI UNA MATRI TIENE NAN EN ALGUN ELEMENTO MOSTRAR -- EN VES DE NAN
+// EJ [[1,2],[3,4]] -> 
 
-//<Elemento> ::= “cadena” | <OP> 
+    // | 1 2 |
+    // | 3 4 |
+
+// EJ [[1,2],[NAN,4]] -> 
+
+    // | 1 2 |
+    // | - 4 |
+
+
+// <Elemento> ::= “cadena” | <OP>
 procedure evaluar_elemento(var arbol: puntero_arbol; var estado: t_estado);
     var
         valor:real;
         matriz:t_tipo_matriz;
         tipo:t_tipo;
-        lexema:string;
-        i,j,fila,columna:integer;
+
     begin
         case arbol^.hijos.elem[1]^.simbolo of
-            Tcadena: begin
-                        lexema:=Copy(arbol^.hijos.elem[1]^.lexema,2,Length(arbol^.hijos.elem[1]^.lexema)-2);
-                        write(lexema);
-                    end;
-            Vop: begin
-                    evaluar_op(arbol^.hijos.elem[1], estado,valor,matriz,tipo,lexema);
-                    case tipo of
-                        Treal_estado: write(valor:0:2);
-                        Tmatriz_estado: 
-                            begin
-                                obtener_dimensiones(estado,lexema, fila,columna);
-                                writeln();
-                                for i:=1 to fila do
-                                    begin
-                                        for j:=1 to columna do
-                                            write(matriz[i,j]:0:2,' ');
-                                        writeln;
-                                    end;
-
-
-                        
-                            end;
-                    end;
+            Tcadena:
+                begin
+                    write(Copy(arbol^.hijos.elem[1]^.lexema, 2, Length(arbol^.hijos.elem[1]^.lexema) - 2));
+                end;
+            Vop:
+                begin
+                    evaluar_op(arbol^.hijos.elem[1], estado, valor, matriz, tipo);
+                    
+                    if tipo = Treal_estado then
+                        write(valor:0:2)
+                    else 
+                        begin
+                            writeln();
+                            escribir_matriz(matriz);
+                            writeln();
+                        end;
                 end;
         end;
     end;
@@ -1137,14 +1154,11 @@ procedure evaluar_condicional(var arbol:puntero_arbol; var estado:t_estado);
             evaluar_si_no(arbol^.hijos.elem[6], estado);
     end;
 
-
 // <SiNo> ::= “else” “{“ <Cuerpo> “}” | eps
 procedure evaluar_si_no(var arbol:puntero_arbol; var estado:t_estado);
     begin
         if arbol^.hijos.cant > 0 then
-            begin
-                evaluar_cuerpo(arbol^.hijos.elem[3], estado);
-            end;
+            evaluar_cuerpo(arbol^.hijos.elem[3], estado);
     end;
 
 // <Ciclo> ::= “while” <Condicion> “{“ <Cuerpo> “}” 
@@ -1166,10 +1180,8 @@ procedure evaluar_condicion(var arbol:puntero_arbol; var estado:t_estado; var re
     begin
         evaluar_expresion_l(arbol^.hijos.elem[2], estado,resultado_condicion);
     end;
-
 // <ExpresionL> ::= <ExpresionR> <ExpresionL'>
 //                | “!” “(“ <ExpresionL> “)”
-
 procedure evaluar_expresion_l(var arbol:puntero_arbol; var estado:t_estado; var resultado_condicion:boolean);
 
     begin
@@ -1188,7 +1200,6 @@ procedure evaluar_expresion_l(var arbol:puntero_arbol; var estado:t_estado; var 
 // <ExpresionL'> ::= “&&” <ExpresionR> <ExpresionL'> 
 //                 | “||” <ExpresionR> <ExpresionL'> 
 //                 | eps
-
 procedure evaluar_expresion_l_prima(var arbol:puntero_arbol; var estado:t_estado; var resultado_condicion:boolean);
     var
         resultado_condicion_der:boolean;
@@ -1206,10 +1217,9 @@ procedure evaluar_expresion_l_prima(var arbol:puntero_arbol; var estado:t_estado
                         end;
                 end;
             
-            if arbol^.hijos.cant > 2 then
-                begin
-                    evaluar_expresion_l_prima(arbol^.hijos.elem[3], estado, resultado_condicion);
-                end;
+           
+                evaluar_expresion_l_prima(arbol^.hijos.elem[3], estado, resultado_condicion);
+
             end;
     end;
 
@@ -1219,30 +1229,19 @@ procedure evaluar_expresion_r(var arbol:puntero_arbol; var estado:t_estado; var 
         valor_izq,valor_der:real;
         matriz_izq,matriz_der:t_tipo_matriz;
         tipo_izq,tipo_der:t_tipo;
-        lexema_izq,lexema_der:string;
     begin
         case arbol^.hijos.elem[1]^.simbolo of
-            Tpregunta: begin
-                    evaluar_op(arbol^.hijos.elem[2], estado,valor_izq,matriz_izq,tipo_izq,lexema_izq);
-                    evaluar_op(arbol^.hijos.elem[4], estado,valor_der,matriz_der,tipo_der,lexema_der);
-                    evaluar_comparacion(arbol^.hijos.elem[3], estado,valor_izq,valor_der,matriz_izq,matriz_der,tipo_izq,tipo_der,resultado_condicion);
-                end;
-            Tparentesisa: begin
-                            evaluar_expresion_l(arbol^.hijos.elem[2], estado, resultado_condicion);
-                        end;
+            Tpregunta: begin  
+                        evaluar_op(arbol^.hijos.elem[2], estado,valor_izq,matriz_izq,tipo_izq);
+                        evaluar_op(arbol^.hijos.elem[4], estado,valor_der,matriz_der,tipo_der);
+
+                        evaluar_comparacion(arbol^.hijos.elem[3], estado,valor_izq,valor_der,matriz_izq,matriz_der,tipo_izq,tipo_der,resultado_condicion);
+                       end;
+            Tparentesisa: evaluar_expresion_l(arbol^.hijos.elem[2], estado, resultado_condicion);
         end;
     end;
 
 // <Comparacion> ::= “==” | “!=” | “>” | “<” | “ >=” | “<=”  
-// COMPARACIONES VALIDAS CON:
-// IGUAL REAL == REAL, MATRIZ == MATRIZ
-// DISTINTO REAL != REAL, MATRIZ != MATRIZ
-// MAYOR REAL > REAL
-// MENOR REAL < REAL
-// MAYOR IGUAL REAL >= REAL
-// MENOR IGUAL REAL <= REAL
-
-
 procedure evaluar_comparacion(var arbol:puntero_arbol;var estado:t_estado;var valor_izq,valor_der:real;var matriz_izq,matriz_der:t_tipo_matriz;
                               var tipo_izq,tipo_der:t_tipo;var resultado_condicion:boolean);
 
@@ -1250,7 +1249,7 @@ procedure evaluar_comparacion(var arbol:puntero_arbol;var estado:t_estado;var va
         if tipo_izq <> tipo_der then
             begin
                 writeln('Error: No se puede comparar valor de distinto tipo');
-
+                halt();
             end
         else
             begin
@@ -1271,31 +1270,41 @@ procedure evaluar_comparacion(var arbol:puntero_arbol;var estado:t_estado;var va
                                 if tipo_izq = Treal_estado then
                                     resultado_condicion := (valor_izq > valor_der)
                                 else
-                                    writeln('Error: No se puede comparar una matriz con otra con >');
+                                    begin
+                                        writeln('Error: No se puede comparar una matriz con otra con >');
+                                        halt();
+                                    end;
                             end;
                     Tmenor: begin
                                 if tipo_izq = Treal_estado then
                                     resultado_condicion := (valor_izq < valor_der)
                                 else
-                                    writeln('Error: No se puede comparar una matriz con otra con <');
+                                    begin
+                                        writeln('Error: No se puede comparar una matriz con otra con <');
+                                        halt();
+                                    end;
                             end;
                     Tmayori: begin 
                                     if tipo_izq = Treal_estado then
                                         resultado_condicion := (valor_izq >= valor_der)
                                     else
-                                        writeln('Error: No se puede comparar una matriz con otra con >=');
+                                        begin
+                                            writeln('Error: No se puede comparar una matriz con otra con >=');
+                                            halt();
+                                        end;
                                 end; 
                     Tmenori: begin 
                                     if tipo_izq = Treal_estado then
                                         resultado_condicion := (valor_izq <= valor_der)
                                     else
-                                        writeln('Error: No se puede comparar una matriz con otra con <=');
+                                        begin
+                                            writeln('Error: No se puede comparar una matriz con otra con <=');
+                                            halt();
+                                        end;
                                 end; 
                     end;
 
             end;
     end;
-
-
 
 END.
