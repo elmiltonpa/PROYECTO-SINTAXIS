@@ -242,6 +242,8 @@ procedure obtener_tipo(var estado: t_estado; id_lexema: string; var tipo: t_tipo
                     tipo := estado.elem[i].tipo;
                     exit;
                 end;
+        writeln('Error: Variable no declarada ', id_lexema);
+        halt();
     end;
 
 procedure obtener_matriz(var estado: t_estado; id_lexema: string; var matriz: t_tipo_matriz);
@@ -252,18 +254,6 @@ procedure obtener_matriz(var estado: t_estado; id_lexema: string; var matriz: t_
             if AnsiLowerCase(estado.elem[i].id_lexema) = AnsiLowerCase(id_lexema) then
                 begin
                     matriz := estado.elem[i].valor_matriz;
-                    exit;
-                end;
-    end;
-
-procedure obtener_valor_matriz(var estado: t_estado; id_lexema: string; fila,columna: integer; var valor: real);
-    var
-        i: integer;
-    begin
-        for i := 1 to estado.cant do
-            if AnsiLowerCase(estado.elem[i].id_lexema) = AnsiLowerCase(id_lexema) then
-                begin
-                    valor := estado.elem[i].valor_matriz[fila, columna];
                     exit;
                 end;
     end;
@@ -778,7 +768,14 @@ procedure evaluar_op_2_prima(var arbol: puntero_arbol; var estado: t_estado; var
                             if tipos_iguales(tipo, tipo_2) then
                                 begin
                                     if tipo = Treal_estado then
-                                        valor := valor / valor_2
+                                        begin
+                                            if valor_2 = 0 then
+                                                begin
+                                                    writeln('Error: Division por cero');
+                                                    halt();
+                                                end;
+                                            valor := valor / valor_2;
+                                        end
                                     else 
                                         begin
                                             writeln('Error, no se puede dividir matrices');
