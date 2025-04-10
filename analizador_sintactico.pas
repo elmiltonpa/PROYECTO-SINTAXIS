@@ -9,7 +9,6 @@ USES
 CONST
     max_producciones = 8;
 
-
 TYPE
     t_produccion = record
         elem: array[1..max_producciones] of TipoSG;
@@ -53,16 +52,13 @@ TYPE
         sig: puntero_pila;
     end;
 
-    // PARA CARGAR LA TAS
     array_producciones = array[0..max_producciones] of TipoSG;
     
-
     procedure crear_pila(var p: t_pila);
     procedure apilar(var p: t_pila; x: t_elem_pila);
     procedure desapilar(var p: t_pila; var x: t_elem_pila);
     procedure guardar_arbol(ruta: string;var arbol: puntero_arbol);
     procedure analizador_predictivo(var ruta_fuente:string; var arbol: puntero_arbol;var error:boolean);
-
 
 IMPLEMENTATION
 
@@ -120,7 +116,6 @@ procedure cargarTAS(var TAS: t_TAS);
 
     begin
 
-        // TODO CAMBIAR ESTO CON LA NUEVATAS
         new(TAS[Vprograma,Tprogram]);
         TAS[Vprograma,Tprogram]^.elem[1]:=Tprogram;
         TAS[Vprograma,Tprogram]^.elem[2]:=Tid;
@@ -927,7 +922,6 @@ procedure cargarTAS(var TAS: t_TAS);
 
     end;
 
-
 procedure crear_nodo(SG: TipoSG; var puntero: puntero_arbol);
     begin
         new(puntero);
@@ -997,10 +991,6 @@ procedure analizador_predictivo(var ruta_fuente:string; var arbol:puntero_arbol;
         while (estado = proceso) do 
             begin
                 desapilar(pila,elem);
-                // writeln('elem.simbolo: ',elem.simbolo);
-                // writeln('complex: ',complex);
-                // readkey;
-
                 if elem.simbolo in [Tprogram..Tmenori] then
                     begin
                         if elem.simbolo = complex Then
@@ -1016,7 +1006,6 @@ procedure analizador_predictivo(var ruta_fuente:string; var arbol:puntero_arbol;
                                 error:=true;
                             end;
                     end;
-
                 if elem.simbolo in [Vprograma..Vcomparacion] then
                     begin
                         if TAS[elem.simbolo,complex] = nil then
@@ -1033,8 +1022,7 @@ procedure analizador_predictivo(var ruta_fuente:string; var arbol:puntero_arbol;
                                         aux := TAS[elem.simbolo,complex]^.elem[i];
                                         crear_nodo(aux,aux2);
                                         agregar_hijo(elem.n_arbol,aux2);
-                                    end;
-                                    // REVISAR ACA SI ES ELEM.N_ARBOL O AUX2    
+                                    end;    
                                 apilar_todos(TAS[elem.simbolo,complex]^,elem.n_arbol,pila); 
                             end;
                     end
@@ -1049,39 +1037,6 @@ procedure analizador_predictivo(var ruta_fuente:string; var arbol:puntero_arbol;
             end;
         close(fuente);
     end;
-        // POSIBLE SOLUICION PROBAR CUANDO ANDE EL ANTERIOR 
-
-        // while (estado = proceso) do
-        //     begin
-        //         desapilar(pila,elem);
-        //         if elem.simbolo = complex then
-        //             begin
-        //                 arbol:=elem.n_arbol;
-        //                 arbol^.lexema:=lexema;
-        //                 control:=control+1;
-        //                 obtener_siguiente_complex(fuente,control,complex,lexema,TS);
-        //             end
-        //         else
-        //             begin
-        //                 if elem.simbolo in [Vprograma..Vcomparacion] then
-        //                     begin
-        //                         aux:=elem.simbolo;
-        //                         aux2:=elem.n_arbol;
-        //                         if TAS[aux,complex]<>nil then
-        //                             begin
-        //                                 agregar_hijo(aux2,TAS[aux,complex]);
-        //                                 apilar_todos(TAS[aux,complex]^,aux2,pila);
-        //                             end
-        //                         else
-        //                             estado:=error_sintactico;
-        //                     end
-        //                 else
-        //                     estado:=error_sintactico;
-        //             end;
-        //         if complex = pesos then
-        //             estado:=exito;
-        //     end;
-
 
 procedure guardar_nodo(var archivo:text; var arbol:puntero_arbol; dezpl:string);
     var

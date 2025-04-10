@@ -536,7 +536,6 @@ procedure evaluar_definiciones(var arbol: puntero_arbol; var estado: t_estado);
             evaluar_lista_definiciones(arbol^.hijos.elem[2], estado);
     end;
 
-
 // <ListaDefiniciones> ::= <Definicion> ";" <MasDefiniciones>
 procedure evaluar_lista_definiciones(var arbol: puntero_arbol; var estado: t_estado);
     begin
@@ -580,9 +579,7 @@ procedure evaluar_tipo(var arbol: puntero_arbol; var estado: t_estado; id_lexema
                     agregar_matriz(estado, id_lexema, tipo, fila, columna);
                 end;
         end;
-
     end;
-
 
 // <Cuerpo> ::= <Sentencias> “;” <Cuerpo> | eps
 procedure evaluar_cuerpo(var arbol: puntero_arbol; var estado: t_estado);
@@ -606,7 +603,6 @@ procedure evaluar_sentencias(var arbol: puntero_arbol; var estado: t_estado);
         end;
     end;
 
-
 // <Asignacion> ::= "id" <Asingacion’> 
 procedure evaluar_asignacion(var arbol: puntero_arbol; var estado: t_estado);
     var
@@ -615,7 +611,6 @@ procedure evaluar_asignacion(var arbol: puntero_arbol; var estado: t_estado);
         lexema := arbol^.hijos.elem[1]^.lexema;
         evaluar_asignacion_prima(arbol^.hijos.elem[2], estado, lexema);
     end;
-
 
 // <Asigancion’> ::=  ":=" <Asignacion’’> |  “[“ <OP>”]””[“<OP> “]” “:=” <OP> 
 procedure evaluar_asignacion_prima(var arbol: puntero_arbol; var estado: t_estado; lexema: string);
@@ -644,7 +639,6 @@ procedure evaluar_asignacion_prima(var arbol: puntero_arbol; var estado: t_estad
                             writeln('Error de tipos en la asignacion de ', lexema);
                             halt();
                         end;
-
                 end;
             Tcorchetea:
                 begin
@@ -672,11 +666,7 @@ procedure evaluar_asignacion_prima(var arbol: puntero_arbol; var estado: t_estad
                         end;
                 end;
         end;
-
-
     end;
-
-
 
 // <Asignacin’’> :=  <OP> | <CMatriz>   OP PUEDE SER MATRIZ O REAL Y CMATRIZ SIEMPRE MATRIZ
 procedure evaluar_asignacion_prima_prima(var arbol: puntero_arbol; var estado: t_estado;var valor: real; var matriz: t_tipo_matriz; var tipo_2: t_tipo);
@@ -691,8 +681,6 @@ procedure evaluar_asignacion_prima_prima(var arbol: puntero_arbol; var estado: t
                     evaluar_cmatriz(arbol^.hijos.elem[1], estado, matriz);
                 end;
         end;
-
-
     end;
 
 // <OP> ::= <OP2> <OP'>
@@ -739,7 +727,6 @@ procedure evaluar_op_prima(var arbol: puntero_arbol; var estado: t_estado; var v
                     end;
 
                 evaluar_op_prima(arbol^.hijos.elem[3], estado, valor, matriz, tipo);
-
             end;
     end;
 
@@ -809,10 +796,8 @@ procedure evaluar_op_2_prima(var arbol: puntero_arbol; var estado: t_estado; var
                                 end;
                         end;
                 end;
-
                 evaluar_op_2_prima(arbol^.hijos.elem[3], estado, valor, matriz, tipo);
             end;
-
     end;
 
 
@@ -861,7 +846,6 @@ procedure evaluar_op_3_prima(var arbol: puntero_arbol; var estado: t_estado; var
             end;
     end;
 
-
 // <OP4> ::= “id” <OP4’> | “creal” | “filas” “(“ “id” “)” | “columnas” “(“ “id” “)” |
 //                   “tras” “(“ “id” “)”  | “-” <OP4> | “(“ <OP> “)” 
 procedure evaluar_op_4(var arbol: puntero_arbol; var estado: t_estado; var valor:real; var matriz:t_tipo_matriz; var tipo:t_tipo);
@@ -885,9 +869,7 @@ procedure evaluar_op_4(var arbol: puntero_arbol; var estado: t_estado; var valor
                     else 
                         obtener_matriz(estado, lexema, matriz);
 
-       
                     evaluar_op_4_prima(arbol^.hijos.elem[2], estado, valor, matriz, tipo);
-     
                     
                 end;
             Tcreal:
@@ -937,14 +919,8 @@ procedure evaluar_op_4(var arbol: puntero_arbol; var estado: t_estado; var valor
                         matriz_escalar(matriz, -1);
                 end;
             Tparentesisa: evaluar_op(arbol^.hijos.elem[2], estado, valor, matriz, tipo);
-    
-
         end;
-
     end;
-
-
-
 
 // <OP4’> ::= “[“ <OP> “]” “[“ <OP> “]” | eps
 procedure evaluar_op_4_prima(var arbol: puntero_arbol; var estado: t_estado; var valor:real; var matriz:t_tipo_matriz; var tipo:t_tipo);
@@ -1117,18 +1093,6 @@ procedure evaluar_lista_prima(var arbol: puntero_arbol; var estado: t_estado);
         if arbol^.hijos.cant > 0 then
             evaluar_lista(arbol^.hijos.elem[2], estado);
     end;
-// TODO AL MOSTRAR UNA MATRIZ MOSTRAR CON CORCHETES Y SIN ESPACIOS ENTRE LOS VALORES
-// TODO TAMBIEN SI UNA MATRI TIENE NAN EN ALGUN ELEMENTO MOSTRAR -- EN VES DE NAN
-// EJ [[1,2],[3,4]] -> 
-
-    // | 1 2 |
-    // | 3 4 |
-
-// EJ [[1,2],[NAN,4]] -> 
-
-    // | 1 2 |
-    // | - 4 |
-
 
 // <Elemento> ::= “cadena” | <OP>
 procedure evaluar_elemento(var arbol: puntero_arbol; var estado: t_estado);
@@ -1189,7 +1153,6 @@ procedure evaluar_ciclo(var arbol:puntero_arbol; var estado:t_estado);
                 evaluar_cuerpo(arbol^.hijos.elem[4], estado);
                 evaluar_condicion(arbol^.hijos.elem[2], estado,resultado_condicion);
             end;
-
     end;
 
 // <Condicion> ::= “(“  <ExpresionL>  “)” 
@@ -1233,10 +1196,7 @@ procedure evaluar_expresion_l_prima(var arbol:puntero_arbol; var estado:t_estado
                             resultado_condicion := (resultado_condicion or resultado_condicion_der);
                         end;
                 end;
-            
-           
                 evaluar_expresion_l_prima(arbol^.hijos.elem[3], estado, resultado_condicion);
-
             end;
     end;
 
@@ -1320,8 +1280,9 @@ procedure evaluar_comparacion(var arbol:puntero_arbol;var estado:t_estado;var va
                                         end;
                                 end; 
                     end;
-
             end;
     end;
+
+
 
 END.

@@ -22,7 +22,6 @@ TYPE
               Vfilasextra , Vfila , Vnumeros , Vnumerosp , Vleer , Vescribir , Vlista , Vlistap , Velemento , Vcondicional , Vsino , 
               Vciclo , Vcondicion , Vexpresionl , Vexpresionlp , Vexpresionr , Vcomparacion );
 
-
     t_archivo = file of char; 
     t_elem_TS = record  
         complex : TipoSG;
@@ -230,9 +229,7 @@ function es_constante_real(var fuente:t_archivo;var control:longint;var lexema:s
         delta[3,P] := 4;
         delta[3,O] := 5;
     
-
         estado_actual := q0;
-      
 
         while (estado_actual <> 4) and (estado_actual <> 5) do
             begin
@@ -428,21 +425,17 @@ function es_simbolo_especial(var fuente:t_archivo;var control:longint;var lexema
                   end;
             else
                 begin
-                    es_simbolo_especial := false;
-                    
+                    es_simbolo_especial := false;         
                 end;
         end;
-
     end;
 
 procedure obtener_siguiente_complex(var fuente:t_archivo;var control:longint; var complex:TipoSG;var lexema:string;
                                     var ts:tabla_simbolos);
-
     var
         car: char;
 
     begin 
-
         leer_car(fuente,control,car);
         while car in [#1..#32] do
             begin
@@ -468,14 +461,8 @@ procedure obtener_siguiente_complex(var fuente:t_archivo;var control:longint; va
                                begin
                                     complex := ErrorLexico;
                                 end;
-            end;
-
-
-
-        
+            end; 
     end;
 
+
 END.
-
-
-
