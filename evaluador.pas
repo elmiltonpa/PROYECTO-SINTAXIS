@@ -133,18 +133,38 @@ procedure obtener_dimensiones_cmatriz(var matriz:t_tipo_matriz; var filas,column
                     end;
     end;
 
-procedure escribir_matriz(var matriz:t_tipo_matriz);
+function obtener_max_enteros(var matriz: t_tipo_matriz;var filas,columnas:integer): integer;
     var
-        i,j,filas,columnas: integer;
+        parte_entera: longint;
+        len_actual, max_len, i, j: integer;
     begin
-        obtener_dimensiones_cmatriz(matriz, filas, columnas);
-        for i:=1 to filas do
-            begin
-                for j:=1 to columnas do
-                    write(matriz[i,j]:0:2, ' ');
-                writeln();
-            end;
+        max_len := 0;
+        for i := 1 to filas do
+            for j := 1 to columnas do
+                begin
+                    parte_entera := abs(trunc(matriz[i,j]));
+                    len_actual := length(IntToStr(parte_entera));
+                    if len_actual > max_len then
+                        max_len := len_actual;
+                end;
+        obtener_max_enteros := max_len;
+end;
+
+procedure escribir_matriz(var matriz: t_tipo_matriz);
+var
+    i, j, filas, columnas, max_enteros: integer;
+begin
+    obtener_dimensiones_cmatriz(matriz, filas, columnas);
+    max_enteros := obtener_max_enteros(matriz,filas,columnas);
+    max_enteros := max_enteros + 3; 
+    for i := 1 to filas do
+    begin
+        write('| ');
+        for j := 1 to columnas do
+            write(matriz[i,j]:max_enteros:2, ' '); 
+        writeln('|');
     end;
+end;
 
 procedure agregar_real(var estado: t_estado; id_lexema: string; tipo: t_tipo);
     begin
