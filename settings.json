@@ -1,6 +1,5 @@
 {
     "workbench.iconTheme": "material-icon-theme",
-    "terminal.integrated.defaultProfile.windows": "Git Bash",
     "github.copilot.enable": {
         "*": true,
         "plaintext": false,
@@ -11,6 +10,4 @@
     "github.copilot.advanced": {
 
     },
-    "git.decorations.enabled": false,
-    "git.autorefresh": false
 }

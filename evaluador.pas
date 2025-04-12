@@ -1112,7 +1112,10 @@ procedure evaluar_elemento(var arbol: puntero_arbol; var estado: t_estado);
                     evaluar_op(arbol^.hijos.elem[1], estado, valor, matriz, tipo);
                     
                     if tipo = Treal_estado then
-                        write(valor:0:2)
+                        if frac(valor) = 0 then
+                            write(valor:0:0)
+                        else 
+                            write(valor:0:2)
                     else 
                         begin
                             writeln();

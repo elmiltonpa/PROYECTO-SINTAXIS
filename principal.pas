@@ -11,7 +11,6 @@ VAR
     estado:   t_estado;
     ruta_fuente,ruta_archivo:   string;
 
-
 BEGIN
     clrscr;
     ruta_fuente:='C:\ARCHIVOS\FUENTE.txt';

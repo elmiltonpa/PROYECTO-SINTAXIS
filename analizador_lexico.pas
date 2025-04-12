@@ -29,7 +29,7 @@ TYPE
         end;
 
     tabla_simbolos = record
-        elem: array [1..MaxSim] of T_elem_TS;
+        elem: array [1..MaxSim] of t_elem_TS;
         cant: 0..MaxSim;
         end; 
 
