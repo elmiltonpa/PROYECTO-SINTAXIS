@@ -306,14 +306,17 @@ procedure obtener_dimensiones(var estado: t_estado; id_lexema: string; var filas
 procedure trasponer_matriz(var matriz:t_tipo_matriz);
     var
         i,j,filas,columnas: integer;
-        aux: t_tipo_matriz;
+        temp: real;
     begin
-        inicializar_matriz_NaN(aux);
         obtener_dimensiones_cmatriz(matriz, filas, columnas);
-        for i:=1 to filas do
-            for j:=1 to columnas do
-                aux[j,i] := matriz[i,j];
-        matriz := aux;
+        
+        for i := 1 to filas do
+            for j := i+1 to columnas do
+                begin
+                    temp := matriz[i,j];
+                    matriz[i,j] := matriz[j,i];
+                    matriz[j,i] := temp;
+                end;
     end;
 
 procedure multiplicar_matrices(var matriz_1, matriz_2, resultado:t_tipo_matriz);
@@ -503,23 +506,27 @@ function matrices_iguales(var A, B: t_tipo_matriz):boolean;
     var
         i, j: integer;
         filas_A, columnas_A,filas_B,columnas_B: integer;
-        iguales: boolean;
     begin
+
         obtener_dimensiones_cmatriz(A, filas_A, columnas_A);
         obtener_dimensiones_cmatriz(B, filas_B, columnas_B);
-        iguales := true;
+    
 
         if (filas_A <> filas_B) or (columnas_A <> columnas_B) then
-                iguales := false
-        else
-            for i := 1 to filas_A do
-                for j := 1 to columnas_A do
-                    if A[i, j] <> B[i, j] then
-                        begin
-                            matrices_iguales := false;
-                            exit;
-                        end;
-        matrices_iguales := iguales;
+        begin
+            matrices_iguales := false;
+            exit;
+        end;
+
+        for i := 1 to filas_A do
+            for j := 1 to columnas_A do
+                if A[i, j] <> B[i, j] then
+                begin
+                    matrices_iguales := false;
+                    exit;
+                end;
+                
+        matrices_iguales := true;
     end;
 
 // <Programa> ::= "program" "id" ";" <Definiciones> "{" <Cuerpo> "}"
@@ -550,13 +557,13 @@ procedure evaluar_mas_definiciones(var arbol: puntero_arbol; var estado: t_estad
             evaluar_lista_definiciones(arbol^.hijos.elem[1], estado);
     end;
 
-// <Definicion> ::= “id” “:” <Tipo>
+// <Definicion> ::= "id" ":" <Tipo>
 procedure evaluar_definicion(var arbol: puntero_arbol; var estado: t_estado);
     begin
         evaluar_tipo(arbol^.hijos.elem[3], estado,arbol^.hijos.elem[1]^.lexema);
     end;
 
-// <Tipo> ::=  "matriz" "[" “creal” "]" "["  “creal“ "]" | "real"  
+// <Tipo> ::=  "matriz" "[" "creal" "]" "["  "creal" "]" | "real"  
 procedure evaluar_tipo(var arbol: puntero_arbol; var estado: t_estado; id_lexema: string);
     var
         tipo: t_tipo;
@@ -573,6 +580,11 @@ procedure evaluar_tipo(var arbol: puntero_arbol; var estado: t_estado; id_lexema
                 begin
                     fila_aux := pasar_a_real(arbol^.hijos.elem[3]^.lexema);
                     columna_aux := pasar_a_real(arbol^.hijos.elem[6]^.lexema);
+                    if (fila_aux <= 0) or (columna_aux <= 0) then
+                        begin
+                            writeln('Error: Las dimensiones de la matriz deben ser mayores a 0.');
+                            halt();
+                        end;
                     fila := trunc(fila_aux);
                     columna := trunc(columna_aux);
                     tipo := Tmatriz_estado;
@@ -581,7 +593,7 @@ procedure evaluar_tipo(var arbol: puntero_arbol; var estado: t_estado; id_lexema
         end;
     end;
 
-// <Cuerpo> ::= <Sentencias> “;” <Cuerpo> | eps
+// <Cuerpo> ::= <Sentencias> ";" <Cuerpo> | eps
 procedure evaluar_cuerpo(var arbol: puntero_arbol; var estado: t_estado);
     begin
         if arbol^.hijos.cant > 0 then
@@ -603,7 +615,7 @@ procedure evaluar_sentencias(var arbol: puntero_arbol; var estado: t_estado);
         end;
     end;
 
-// <Asignacion> ::= "id" <Asingacion’> 
+// <Asignacion> ::= "id" <Asingacion'> 
 procedure evaluar_asignacion(var arbol: puntero_arbol; var estado: t_estado);
     var
         lexema:string;
@@ -612,7 +624,7 @@ procedure evaluar_asignacion(var arbol: puntero_arbol; var estado: t_estado);
         evaluar_asignacion_prima(arbol^.hijos.elem[2], estado, lexema);
     end;
 
-// <Asigancion’> ::=  ":=" <Asignacion’’> |  “[“ <OP>”]””[“<OP> “]” “:=” <OP> 
+// <Asigancion'> ::= ":=" <Asignacion''> | "[" <OP>"]""["<OP> "]" := <OP> 
 procedure evaluar_asignacion_prima(var arbol: puntero_arbol; var estado: t_estado; lexema: string);
     var
         tipo_1,tipo_2: t_tipo;
@@ -668,7 +680,7 @@ procedure evaluar_asignacion_prima(var arbol: puntero_arbol; var estado: t_estad
         end;
     end;
 
-// <Asignacin’’> :=  <OP> | <CMatriz>   OP PUEDE SER MATRIZ O REAL Y CMATRIZ SIEMPRE MATRIZ
+// <Asignacin''> :=  <OP> | <CMatriz>   OP PUEDE SER MATRIZ O REAL Y CMATRIZ SIEMPRE MATRIZ
 procedure evaluar_asignacion_prima_prima(var arbol: puntero_arbol; var estado: t_estado;var valor: real; var matriz: t_tipo_matriz; var tipo_2: t_tipo);
     begin
         case arbol^.hijos.elem[1]^.simbolo of
@@ -808,7 +820,7 @@ procedure evaluar_op_3(var arbol: puntero_arbol; var estado: t_estado; var valor
         evaluar_op_3_prima(arbol^.hijos.elem[2], estado,valor,matriz,tipo);
     end;
 
-// <OP3'> ::= “^” <OP4> <OP3'> | eps
+// <OP3'> ::= "^" <OP4> <OP3'> | eps
 // REAL ^ REAL || MATRIZ ^ REAL 
 procedure evaluar_op_3_prima(var arbol: puntero_arbol; var estado: t_estado; var valor:real; var matriz:t_tipo_matriz; var tipo:t_tipo);
     var
@@ -846,8 +858,8 @@ procedure evaluar_op_3_prima(var arbol: puntero_arbol; var estado: t_estado; var
             end;
     end;
 
-// <OP4> ::= “id” <OP4’> | “creal” | “filas” “(“ “id” “)” | “columnas” “(“ “id” “)” |
-//                   “tras” “(“ “id” “)”  | “-” <OP4> | “(“ <OP> “)” 
+// <OP4> ::= "id" <OP4'> | "creal" | "filas" "(" "id" ")" | "columnas" "(" "id" ")" |
+//                   "tras" "(" "id" ")"  | "-" <OP4> | "(" <OP> ")" 
 procedure evaluar_op_4(var arbol: puntero_arbol; var estado: t_estado; var valor:real; var matriz:t_tipo_matriz; var tipo:t_tipo);
     var
         lexema:string;
@@ -922,7 +934,7 @@ procedure evaluar_op_4(var arbol: puntero_arbol; var estado: t_estado; var valor
         end;
     end;
 
-// <OP4’> ::= “[“ <OP> “]” “[“ <OP> “]” | eps
+// <OP4'> ::= "[" <OP> "]" "[" <OP> "]" | eps
 procedure evaluar_op_4_prima(var arbol: puntero_arbol; var estado: t_estado; var valor:real; var matriz:t_tipo_matriz; var tipo:t_tipo);
     var
         fila_aux,columna_aux: real;
@@ -952,7 +964,7 @@ procedure evaluar_op_4_prima(var arbol: puntero_arbol; var estado: t_estado; var
             end;
     end;
 
-// <CMatriz> ::= "[" <Filas> "]”
+// <CMatriz> ::= "[" <Filas> "]
 procedure evaluar_cmatriz(var arbol: puntero_arbol; var estado: t_estado; var matriz:t_tipo_matriz);
     var
         fila_aux,columna_aux: integer;
@@ -994,7 +1006,7 @@ procedure evaluar_filas_extra(var arbol: puntero_arbol; var estado: t_estado; va
             end;
     end;
     
-// <Fila> ::= “[“ <Numeros> “]”
+// <Fila> ::= "[" <Numeros> "]"
 procedure evaluar_fila(var arbol: puntero_arbol; var estado: t_estado; var matriz:t_tipo_matriz;var fila,columna:integer);
 
     begin
@@ -1018,7 +1030,7 @@ procedure evaluar_numeros(var arbol: puntero_arbol; var estado: t_estado; var ma
        
     end;
 
-// <Numeros'> ::= “,” <Numeros> | eps
+// <Numeros'> ::= "," <Numeros> | eps
 procedure evaluar_numeros_prima(var arbol: puntero_arbol; var estado: t_estado; var matriz:t_tipo_matriz;var fila,columna:integer);
     begin
         if arbol^.hijos.cant > 0 then
@@ -1028,7 +1040,7 @@ procedure evaluar_numeros_prima(var arbol: puntero_arbol; var estado: t_estado; 
             end;
     end;
 
-// <Leer> ::= “leer” “(“ “cadena” “,” “id” “)”
+// <Leer> ::= "leer" "(" "cadena" "," "id" ")"
 procedure evaluar_leer(var arbol: puntero_arbol; var estado: t_estado);
     var
         lexema,cadena,valor_leido:string;
@@ -1073,7 +1085,7 @@ procedure evaluar_leer(var arbol: puntero_arbol; var estado: t_estado);
             end;
     end;
 
-// <Escribir> ::= “escribir” “(“ <Lista> “)”
+// <Escribir> ::= "escribir" "(" <Lista> ")"
 procedure evaluar_escribir(var arbol: puntero_arbol; var estado: t_estado);
     begin
         evaluar_lista(arbol^.hijos.elem[3], estado);
@@ -1087,14 +1099,14 @@ procedure evaluar_lista(var arbol: puntero_arbol; var estado: t_estado);
         evaluar_lista_prima(arbol^.hijos.elem[2], estado);
     end;
 
-// <Lista'> ::= “,” <Lista> | ε
+// <Lista'> ::= "," <Lista> | ε
 procedure evaluar_lista_prima(var arbol: puntero_arbol; var estado: t_estado);
     begin
         if arbol^.hijos.cant > 0 then
             evaluar_lista(arbol^.hijos.elem[2], estado);
     end;
 
-// <Elemento> ::= “cadena” | <OP>
+// <Elemento> ::= "cadena" | <OP>
 procedure evaluar_elemento(var arbol: puntero_arbol; var estado: t_estado);
     var
         valor:real;
@@ -1126,7 +1138,7 @@ procedure evaluar_elemento(var arbol: puntero_arbol; var estado: t_estado);
         end;
     end;
 
-// <Condicional> ::= “if” <Condicion> “{“ <Cuerpo> “}” <SiNo> 
+// <Condicional> ::= "if" <Condicion> "{" <Cuerpo> "}" <SiNo> 
 procedure evaluar_condicional(var arbol:puntero_arbol; var estado:t_estado);
     var
         resultado_condicion:boolean;
@@ -1138,14 +1150,14 @@ procedure evaluar_condicional(var arbol:puntero_arbol; var estado:t_estado);
             evaluar_si_no(arbol^.hijos.elem[6], estado);
     end;
 
-// <SiNo> ::= “else” “{“ <Cuerpo> “}” | eps
+// <SiNo> ::= "else" "{" <Cuerpo> "}" | eps
 procedure evaluar_si_no(var arbol:puntero_arbol; var estado:t_estado);
     begin
         if arbol^.hijos.cant > 0 then
             evaluar_cuerpo(arbol^.hijos.elem[3], estado);
     end;
 
-// <Ciclo> ::= “while” <Condicion> “{“ <Cuerpo> “}” 
+// <Ciclo> ::= "while" <Condicion> "{" <Cuerpo> "}" 
 procedure evaluar_ciclo(var arbol:puntero_arbol; var estado:t_estado);
     var
         resultado_condicion:boolean;
@@ -1158,13 +1170,13 @@ procedure evaluar_ciclo(var arbol:puntero_arbol; var estado:t_estado);
             end;
     end;
 
-// <Condicion> ::= “(“  <ExpresionL>  “)” 
+// <Condicion> ::= "("  <ExpresionL>  ")" 
 procedure evaluar_condicion(var arbol:puntero_arbol; var estado:t_estado; var resultado_condicion:boolean);
     begin
         evaluar_expresion_l(arbol^.hijos.elem[2], estado,resultado_condicion);
     end;
 // <ExpresionL> ::= <ExpresionR> <ExpresionL'>
-//                | “!” “(“ <ExpresionL> “)”
+//                | "!" "(" <ExpresionL> ")"
 procedure evaluar_expresion_l(var arbol:puntero_arbol; var estado:t_estado; var resultado_condicion:boolean);
 
     begin
@@ -1180,8 +1192,8 @@ procedure evaluar_expresion_l(var arbol:puntero_arbol; var estado:t_estado; var 
         end;
     end;
 
-// <ExpresionL'> ::= “&&” <ExpresionR> <ExpresionL'> 
-//                 | “||” <ExpresionR> <ExpresionL'> 
+// <ExpresionL'> ::= "&&" <ExpresionR> <ExpresionL'> 
+//                 | "||" <ExpresionR> <ExpresionL'> 
 //                 | eps
 procedure evaluar_expresion_l_prima(var arbol:puntero_arbol; var estado:t_estado; var resultado_condicion:boolean);
     var
@@ -1203,7 +1215,7 @@ procedure evaluar_expresion_l_prima(var arbol:puntero_arbol; var estado:t_estado
             end;
     end;
 
-// <ExpresionR> ::= “?” <OP> <Comparacion> <OP> “?” | “(“ <ExpresionL> “)”
+// <ExpresionR> ::= "?" <OP> <Comparacion> <OP> "?" | "(" <ExpresionL> ")"
 procedure evaluar_expresion_r(var arbol:puntero_arbol; var estado:t_estado; var resultado_condicion:boolean);
     var
         valor_izq,valor_der:real;
@@ -1221,7 +1233,7 @@ procedure evaluar_expresion_r(var arbol:puntero_arbol; var estado:t_estado; var 
         end;
     end;
 
-// <Comparacion> ::= “==” | “!=” | “>” | “<” | “ >=” | “<=”  
+// <Comparacion> ::= "==" | "!=" | ">" | "<" | " >==" | "<="  
 procedure evaluar_comparacion(var arbol:puntero_arbol;var estado:t_estado;var valor_izq,valor_der:real;var matriz_izq,matriz_der:t_tipo_matriz;
                               var tipo_izq,tipo_der:t_tipo;var resultado_condicion:boolean);
 
