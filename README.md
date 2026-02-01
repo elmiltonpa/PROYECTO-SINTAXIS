@@ -1,11 +1,11 @@
-## 🚀 Prueba el Proyecto en Vivo
+## Prueba el Proyecto en Vivo
 
 ¿Quieres probar este analizador sintáctico sin instalar nada? 
 
-**[👉 Prueba la versión web aquí](https://front-notlim.vercel.app)**
+**[Prueba la versión web aquí](https://front-notlim.vercel.app)**
 
 O si prefieres explorar el código de la versión web en TypeScript:
-**[📦 Repositorio NOTLIM-WEB](https://github.com/elmiltonpa/NOTLIM-WEB)**
+**[Repositorio NOTLIM-WEB](https://github.com/elmiltonpa/NOTLIM-WEB)**
 
 ---
 
