@@ -1,4 +1,4 @@
-# Compilador e Intérprete de Matrices (Custom Language)
+# Compilador e Intérprete (Custom Language)
 
 Este proyecto es un **compilador e intérprete completo** construido desde cero en **Pascal**.
 
@@ -16,7 +16,7 @@ El programa lee un archivo de texto con código fuente (un lenguaje propio simil
 *   Controlar el flujo con `if`, `else` y bucles `while`.
 *   Manejar entrada y salida de datos por consola.
 
-## 🧠 Aspectos Técnicos Destacados
+## Aspectos Técnicos Destacados
 
 Este proyecto sirve como demostración práctica de conceptos fundamentales de ingeniería de software y teoría de compiladores:
 
@@ -36,7 +36,7 @@ El intérprete realiza un recorrido recursivo sobre el AST para la ejecución de
 
 ---
 
-## 📂 Estructura del Código
+## Estructura del Código
 
 *   `principal.pas`: El orquestador. Conecta el lexer, el parser y el evaluador.
 *   `analizador_lexico.pas`: Convierte el texto en tokens usando autómatas.
@@ -48,7 +48,7 @@ El intérprete realiza un recorrido recursivo sobre el AST para la ejecución de
 
 ---
 
-## 📝 Ejemplo de Código del Lenguaje
+## Ejemplo de Código del Lenguaje
 
 Así se ve el código que el intérprete es capaz de entender y ejecutar:
 
@@ -83,6 +83,3 @@ El proyecto compila con **Free Pascal (FPC)**.
     ```
 3.  Ejecuta el binario generado.
     *(Nota: Revisa las rutas de los archivos de entrada en `principal.pas` si lo pruebas en tu entorno local).*
-
----
-**Autor:** Milton
