@@ -1,14 +1,25 @@
+## 🚀 Prueba el Proyecto en Vivo
+
+¿Quieres probar este analizador sintáctico sin instalar nada? 
+
+**[👉 Prueba la versión web aquí](https://front-notlim.vercel.app)**
+
+O si prefieres explorar el código de la versión web en TypeScript:
+**[📦 Repositorio NOTLIM-WEB](https://github.com/elmiltonpa/NOTLIM-WEB)**
+
+---
+
 # Compilador e Intérprete (Custom Language)
 
 Este proyecto es un **compilador e intérprete completo** construido desde cero en **Pascal**.
 
-El objetivo principal no es el lenguaje en sí, sino la implementación "a mano" de todas las fases de un compilador. No se utilizaron herramientas de generación automática; toda la lógica de análisis y ejecución está programada manualmente para demostrar un control profundo de estructuras de datos y algoritmos.
+El objetivo principal no es el lenguaje en sí, sino la implementación "a mano" de todas las fases de un compilador. No se utilizaron herramientas de generación automática; toda la lógica de análisis léxico, sintáctico y ejecución está implementada manualmente.
 
 ---
 
 ##  ¿De qué trata el proyecto?
 
-El programa lee un archivo de texto con código fuente (un lenguaje propio similar a C/Pascal), lo analiza gramaticalmente y lo ejecuta. El lenguaje está diseñado específicamente para realizar **operaciones matemáticas y matriciales** complejas.
+El programa lee un archivo de texto con código fuente (un lenguaje propio similar a C/Pascal), lo analiza gramaticalmente y lo ejecuta. El lenguaje está diseñado específicamente para realizar operaciones de álgebra lineal sobre matrices.
 
 ### Lo que puede hacer el lenguaje:
 *   Declarar variables (`real` y `matriz`).
@@ -21,12 +32,12 @@ El programa lee un archivo de texto con código fuente (un lenguaje propio simil
 Este proyecto sirve como demostración práctica de conceptos fundamentales de ingeniería de software y teoría de compiladores:
 
 ### 1. Gestión Dinámica de Memoria y Punteros
-La arquitectura se fundamenta en el uso intensivo de **punteros** para la gestión de estructuras de datos dinámicas. El Árbol de Sintaxis Abstracta (AST) se construye y enlaza en memoria manualmente mediante nodos (`^t_nodo_arbol`), lo que requiere un control preciso del ciclo de vida de los datos, simulando el comportamiento de lenguajes de bajo nivel.
+La arquitectura se fundamenta en el uso intensivo de **punteros** para la gestión de estructuras de datos dinámicas. El Árbol de Sintaxis Abstracta (AST) se construye y enlaza en memoria manualmente, reflejando cómo funcionan los compiladores reales a bajo nivel.
 
 ### 2. Implementación Integral del Pipeline de Compilación
 El proyecto prescinde de herramientas de generación automática (como Lex/Yacc), implementando cada fase de forma manual:
 *   **Análisis Léxico (Scanner):** Empleo de autómatas finitos deterministas (AFDs) para el reconocimiento de tokens a nivel de caracteres.
-*   **Análisis Sintáctico (Parser):** Implementación de un analizador **LL(1) Predictivo**. Se utiliza una estructura de **Pila** y una Tabla de Análisis Sintáctico (TAS) para validar la gramática y construir el árbol de derivación de forma eficiente.
+*   **Análisis Sintáctico (Parser):** Implementación de un analizador **LL(1) Predictivo**. Se utiliza una estructura de **Pila** y una Tabla de Análisis Sintáctico (TAS) para validar la gramática sin backtracking.
 
 ### 3. Motor de Ejecución y Evaluación Semántica
 El intérprete realiza un recorrido recursivo sobre el AST para la ejecución del código. Este componente destaca por:
